@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>BATT — Battista Bootcamp 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#000; --card:#161616; --card2:#1c1c1c; --line:#2a2a2a; --line2:#333;
+  --txt:#fff; --sub:#9a9a9a; --red:#ff4136; --red-dk:#c92e25; --gold:#ffe932;
+  --safe-top:14px; --tabbar-h:78px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(--txt);
+  display:flex;align-items:center;justify-content:center;min-height:100vh}
+::-webkit-scrollbar{display:none}
+
+/* ---------- stage / phone frame ---------- */
+.stage{display:flex;gap:56px;align-items:center;justify-content:center;padding:32px}
+.sidebar{max-width:320px;color:#cfcfcf}
+.sidebar .mark{width:150px;margin-bottom:6px}
+.sidebar .mark svg{width:100%;display:block}
+.sidebar .bc{color:var(--red);font-weight:800;font-style:italic;letter-spacing:.34em;font-size:11px;margin:2px 0 22px 2px}
+.sidebar h1{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;color:#fff}
+.sidebar p{font-size:12.5px;line-height:1.65;color:#9a9a9a;margin-bottom:14px}
+.sidebar .pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.sidebar .pill{border:1px solid #333;border-radius:99px;padding:5px 11px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#bbb}
+.sidebar .pill b{color:var(--red)}
+.sidebar .hint{border-left:2px solid var(--red);padding:2px 0 2px 12px;font-size:11.5px;color:#8a8a8a;line-height:1.7}
+.phone{width:393px;height:832px;background:#000;border-radius:54px;position:relative;
+  box-shadow:0 0 0 11px #151515,0 0 0 13px #2e2e2e,0 42px 90px rgba(0,0,0,.75);overflow:hidden;flex-shrink:0}
+.notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:118px;height:32px;background:#111;border-radius:20px;z-index:400;pointer-events:none}
+@media(max-width:860px){
+  body{display:block;background:#000}
+  .stage{padding:0;gap:0}
+  .sidebar{display:none}
+  .phone{width:100vw;height:100dvh;border-radius:0;box-shadow:none}
+  .notch{display:none}
+}
+
+/* ---------- screens ---------- */
+.screen{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
+.screen.on{display:flex}
+.scroll{flex:1;overflow-y:auto;padding:0 18px calc(var(--tabbar-h) + 26px);scrollbar-width:none}
+.screen.pushed .scroll{padding-bottom:26px}
+.screen.pushed{z-index:200;animation:pushin .28s cubic-bezier(.3,.9,.3,1)}
+@keyframes pushin{from{transform:translateX(46px);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- shared type ---------- */
+.kick{color:var(--red);font-weight:800;font-style:italic;text-transform:uppercase;letter-spacing:.22em;font-size:10.5px}
+.h-big{font-weight:900;text-transform:uppercase;letter-spacing:-.01em;font-size:25px;line-height:1.08}
+.h-sec{font-weight:800;font-style:italic;text-transform:uppercase;letter-spacing:.2em;font-size:10.5px;color:var(--red);margin:26px 2px 12px}
+.sub{color:var(--sub);font-size:12px;font-weight:500}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--safe-top) + 34px) 18px 10px;position:relative;z-index:5}
+.hdr .battmark{height:22px}
+.hdr .battmark svg{height:100%;width:auto;display:block}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;background:#222;border:1px solid var(--line2);color:#fff}
+.av-red{background:var(--red);border-color:var(--red)}
+.av-dk{background:#262626}
+.chatbub{position:relative;cursor:pointer}
+.chatbub .dot{position:absolute;top:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:var(--red);border:2px solid #000}
+.backbtn{display:flex;align-items:center;gap:7px;color:#fff;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;background:none;border:none;font-family:inherit;padding:10px 12px;margin:-10px -12px}
+.backbtn svg{width:15px;height:15px}
+
+/* ---------- cards & buttons ---------- */
+.card{background:var(--card);border:1px solid #232323;border-radius:18px;padding:16px;margin-bottom:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:none;border-radius:14px;
+  background:var(--red);color:#fff;font-family:inherit;font-weight:800;font-style:italic;text-transform:uppercase;
+  letter-spacing:.1em;font-size:13.5px;padding:16px;cursor:pointer;transition:transform .08s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:#fff;font-style:normal;font-weight:700}
+.btn.small{padding:10px 14px;font-size:11px;width:auto;border-radius:10px}
+.btn.gold{background:var(--gold);color:#000}
+.slash{display:inline-block;width:16px;height:3px;background:currentColor;transform:skewX(-30deg)}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line2);color:#ccc;border-radius:99px;
+  padding:10px 15px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:#111}
+.chip.onx{background:var(--red);border-color:var(--red);color:#fff}
+.tag{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:3px 7px;background:#262626;color:#bbb}
+.tag.red{background:rgba(255,65,54,.16);color:var(--red)}
+.tag.gold{background:rgba(255,233,50,.14);color:var(--gold)}
+.livepill{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;font-weight:800;font-size:10px;
+  letter-spacing:.14em;border-radius:7px;padding:4px 9px}
+.livepill i{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.1s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* ---------- tab bar ---------- */
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:var(--tabbar-h);background:rgba(10,10,10,.92);
+  backdrop-filter:blur(18px);border-top:1px solid #1f1f1f;display:flex;z-index:300;padding-bottom:14px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:#8f8f8f}
+.tab svg{width:22px;height:22px}
+.tab span{font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.tab.onx{color:#fff}
+.tab.onx .ind{width:14px;height:2.5px;background:var(--red);border-radius:2px;transform:skewX(-30deg)}
+.tab .ind{width:14px;height:2.5px;background:transparent;border-radius:2px}
+
+/* ---------- splash ---------- */
+#s-splash{z-index:500;background:#000;justify-content:space-between;align-items:center;text-align:center;display:none}
+#s-splash.on{display:flex}
+#s-splash .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:100%}
+#s-splash .mark{width:66%;animation:markin .8s cubic-bezier(.2,.9,.3,1)}
+@keyframes markin{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+#s-splash .mark svg{width:100%;display:block}
+#s-splash .bc{color:var(--red);font-weight:800;font-style:italic;letter-spacing:.42em;font-size:13px;margin-top:10px}
+#s-splash .tagline{margin-top:34px;color:#8b8b8b;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase}
+#s-splash .foot{width:100%;padding:0 26px 52px}
+#s-splash .concept{color:#8f8f8f;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-top:16px}
+
+/* ---------- today ---------- */
+.greet .kick{display:block;margin-bottom:6px}
+.greet h2{font-size:26px;font-weight:900;text-transform:uppercase;line-height:1.05}
+.greet h2 em{font-style:normal;color:var(--red)}
+.workcard{position:relative;overflow:hidden;background:linear-gradient(135deg,#1d1d1d 0%,#141414 60%);border:1px solid #262626;border-radius:20px;padding:20px;margin-top:16px}
+.workcard::before{content:"";position:absolute;top:-40px;right:-58px;width:170px;height:230px;background:var(--red);opacity:.12;transform:skewX(-24deg)}
+.workcard .meta{display:flex;gap:8px;margin-bottom:12px}
+.workcard h3{font-size:21px;font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:4px}
+.workcard .coachnote{display:flex;gap:9px;align-items:center;margin:13px 0 15px}
+.workcard .coachnote .avatar{width:28px;height:28px;font-size:10px;flex-shrink:0}
+.workcard .coachnote p{font-size:11.5px;color:#bdbdbd;font-style:italic;line-height:1.45}
+.done-star{display:flex;align-items:center;gap:12px;background:rgba(255,233,50,.07);border:1px solid rgba(255,233,50,.25);border-radius:16px;padding:15px 16px;margin-top:16px}
+.done-star .star{font-size:26px;animation:pop .5s cubic-bezier(.2,2,.4,1)}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.macrostrip{display:flex;gap:10px;margin-top:12px}
+.macro{flex:1;background:var(--card);border:1px solid #232323;border-radius:16px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer}
+.ring{position:relative;width:52px;height:52px}
+.ring svg{transform:rotate(-90deg)}
+.ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800}
+.macro .lbl{font-size:8.5px;font-weight:800;letter-spacing:.12em;color:var(--sub);text-transform:uppercase}
+.habit{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid #232323;border-radius:16px;padding:13px 15px;margin-bottom:9px;cursor:pointer}
+.habit .box{width:26px;height:26px;border-radius:9px;border:2px solid var(--line2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.habit.donex .box{background:var(--red);border-color:var(--red)}
+.habit .box svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:all .15s}
+.habit.donex .box svg{opacity:1;transform:none}
+.habit .t{flex:1}
+.habit .t b{font-size:13px;font-weight:700;display:block}
+.habit.donex .t b{text-decoration:line-through;color:#8b8b8b}
+.habit .streak{display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:800;color:var(--red)}
+.hcaro{display:flex;gap:11px;overflow-x:auto;margin:0 -18px;padding:2px 18px 6px;scrollbar-width:none}
+.classcard{min-width:216px;background:var(--card);border:1px solid #232323;border-radius:18px;padding:15px;flex-shrink:0}
+.classcard .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.classcard h4{font-size:14.5px;font-weight:800;text-transform:uppercase;line-height:1.2;margin-bottom:3px}
+.classcard .who{display:flex;align-items:center;gap:8px;margin:10px 0 13px}
+.classcard .who .avatar{width:26px;height:26px;font-size:9px}
+.classcard .who span{font-size:11px;color:var(--sub);font-weight:600}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--card);border:1px solid #232323;border-radius:16px;padding:14px;cursor:pointer}
+.tile .lbl{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:7px}
+.tile .big{font-size:21px;font-weight:800}
+.tile .big small{font-size:11px;color:var(--sub);font-weight:600}
+.tile .delta{font-size:10.5px;font-weight:700;margin-top:3px}
+.d-up{color:#fff}.d-red{color:var(--red)}.d-gold{color:var(--gold)}
+
+/* ---------- train ---------- */
+.weekstrip{display:flex;gap:7px;margin-top:14px}
+.wday{flex:1;border:1px solid #232323;border-radius:14px;padding:10px 0 9px;text-align:center;background:var(--card);cursor:pointer}
+.wday .d{font-size:8.5px;font-weight:800;letter-spacing:.1em;color:var(--sub)}
+.wday .n{font-size:15px;font-weight:800;margin:3px 0 5px}
+.wday .m{width:5px;height:5px;border-radius:50%;margin:0 auto;background:transparent}
+.wday.hasw .m{background:var(--red)}
+.wday.donew .m{background:var(--gold)}
+.wday.todayx{border-color:var(--red);background:rgba(255,65,54,.08)}
+.progrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid #232323;border-radius:16px;padding:14px 15px;margin-bottom:9px;cursor:pointer}
+.progrow .ic{width:42px;height:42px;border-radius:13px;background:#232323;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.progrow .t{flex:1}
+.progrow .t b{display:block;font-size:13.5px;font-weight:800;text-transform:uppercase}
+.progrow .t span{font-size:11px;color:var(--sub);font-weight:600}
+.progrow .star{color:var(--gold);font-size:16px}
+
+/* ---------- workout overview ---------- */
+.fmt-toggle{display:flex;background:#141414;border:1px solid #232323;border-radius:13px;padding:4px;margin:16px 0}
+.fmt-toggle div{flex:1;text-align:center;padding:10px 4px;border-radius:10px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8a8a8a;cursor:pointer}
+.fmt-toggle div.onx{background:var(--red);color:#fff}
+.exgroup{margin-bottom:14px;position:relative}
+.exgroup.ss{padding-left:13px}
+.exgroup.ss::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--red);border-radius:3px;transform:skewY(-12deg)}
+.exgroup .sslbl{font-size:9px;font-weight:800;letter-spacing:.16em;color:var(--red);text-transform:uppercase;margin-bottom:7px}
+.exrow{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid #232323;border-radius:16px;padding:12px;margin-bottom:8px;cursor:pointer}
+.exrow .thumb{width:52px;height:52px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:21px;background:linear-gradient(135deg,#262626,#191919);border:1px solid #2c2c2c}
+.exrow .t{flex:1;min-width:0}
+.exrow .t b{display:block;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exrow .t span{font-size:11px;color:var(--sub);font-weight:600}
+.exrow .note{font-size:10px;color:#8f8f8f;font-style:italic;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stickybtn{position:sticky;bottom:14px;margin-top:18px;box-shadow:0 12px 34px rgba(255,65,54,.35)}
+
+/* ---------- tracker ---------- */
+#s-tracker .scroll{display:flex;flex-direction:column}
+.trk-video{position:relative;height:206px;border-radius:20px;overflow:hidden;background:
+  radial-gradient(120% 150% at 20% 0%,#3a3a3a 0%,#1b1b1b 55%,#101010 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trk-video .play{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center}
+.trk-video .exname{position:absolute;left:14px;bottom:12px}
+.trk-video .exname .kick{font-size:9px}
+.trk-video .exname b{display:block;font-size:17px;font-weight:900;text-transform:uppercase}
+.trk-video .histbtn{position:absolute;right:12px;top:12px}
+.setrow{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid #232323;border-radius:15px;padding:10px 12px;margin-bottom:8px}
+.setrow.active{border-color:var(--red)}
+.setrow.donerow{opacity:.55}
+.setrow .sn{width:26px;font-size:11px;font-weight:800;color:var(--sub)}
+.setrow .field{flex:1;display:flex;flex-direction:column;align-items:center;background:#101010;border:1px solid #262626;border-radius:11px;padding:6px 4px}
+.setrow .field label{font-size:8px;font-weight:800;letter-spacing:.12em;color:#8f8f8f;text-transform:uppercase}
+.setrow .field .v{display:flex;align-items:center;gap:8px}
+.setrow .field .v b{font-size:19px;font-weight:800;min-width:42px;text-align:center}
+.stepbtn{width:32px;height:32px;border-radius:10px;border:none;background:#242424;color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.setchk{width:38px;height:38px;border-radius:12px;border:2px solid var(--line2);background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.setchk svg{width:17px;height:17px;stroke:#555}
+.setrow.donerow .setchk{background:var(--red);border-color:var(--red)}
+.setrow.donerow .setchk svg{stroke:#fff}
+.resttimer{position:absolute;inset:0;background:rgba(0,0,0,.93);z-index:250;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+.resttimer.on{display:flex}
+.resttimer .ringbig{position:relative;width:190px;height:190px}
+.resttimer .ringbig svg{transform:rotate(-90deg)}
+.resttimer .tval{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.resttimer .tval b{font-size:44px;font-weight:800}
+.resttimer .tval span{font-size:9.5px;letter-spacing:.24em;color:var(--sub);font-weight:800;margin-top:2px}
+.resttimer .nextup{color:#9c9c9c;font-size:12px;font-weight:600}
+.resttimer .rbtns{display:flex;gap:10px}
+.prpop{position:absolute;inset:0;background:rgba(0,0,0,.94);z-index:260;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+.prpop.on{display:flex}
+.prpop .medal{font-size:64px;animation:pop .5s cubic-bezier(.2,2.2,.4,1)}
+.prpop h3{font-size:30px;font-weight:900;font-style:italic;color:var(--gold);margin:14px 0 8px;letter-spacing:.02em}
+.prpop p{color:#bbb;font-size:13px;line-height:1.6;margin-bottom:26px}
+.trkfoot{display:flex;gap:10px;margin-top:auto;padding-top:12px}
+.summary .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:16px 0}
+.summary .sg{background:var(--card);border:1px solid #232323;border-radius:14px;padding:12px;text-align:center}
+.summary .sg b{display:block;font-size:19px;font-weight:800}
+.summary .sg span{font-size:8.5px;font-weight:800;letter-spacing:.1em;color:var(--sub);text-transform:uppercase}
+.notebox{width:100%;background:#111;border:1px solid #262626;border-radius:14px;color:#fff;font-family:inherit;font-size:13px;padding:13px;resize:none;height:86px}
+.notebox::placeholder{color:#8f8f8f}
+
+/* ---------- classes ---------- */
+.seg{display:flex;background:#141414;border:1px solid #232323;border-radius:13px;padding:4px;margin-top:14px}
+.seg div{flex:1;text-align:center;padding:9px 2px;border-radius:10px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#8a8a8a;cursor:pointer}
+.seg div.onx{background:#2a2a2a;color:#fff}
+.livesch{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid #232323;border-radius:17px;padding:14px;margin-bottom:10px}
+.livesch .when{text-align:center;min-width:52px}
+.livesch .when b{display:block;font-size:16px;font-weight:800}
+.livesch .when span{font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--sub);text-transform:uppercase}
+.livesch .t{flex:1;min-width:0}
+.livesch .t b{display:block;font-size:13.5px;font-weight:800;text-transform:uppercase;line-height:1.2}
+.livesch .t span{font-size:11px;color:var(--sub);font-weight:600}
+.odgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.odcard{background:var(--card);border:1px solid #232323;border-radius:16px;overflow:hidden;cursor:pointer}
+.odcard .vthumb{height:86px;position:relative;display:flex;align-items:center;justify-content:center}
+.odcard .vthumb .dur{position:absolute;right:8px;bottom:7px;background:rgba(0,0,0,.72);border-radius:6px;font-size:9.5px;font-weight:800;padding:3px 7px}
+.odcard .b{padding:11px 12px 13px}
+.odcard .b b{display:block;font-size:12px;font-weight:800;text-transform:uppercase;line-height:1.25;margin-bottom:4px}
+.odcard .b span{font-size:10px;color:var(--sub);font-weight:600}
+.searchbar{display:flex;align-items:center;gap:9px;background:#121212;border:1px solid #262626;border-radius:13px;padding:11px 14px;margin:14px 0 11px}
+.searchbar input{flex:1;background:none;border:none;color:#fff;font-family:inherit;font-size:13px;outline:none}
+.searchbar input::placeholder{color:#8f8f8f}
+.chiprow{display:flex;gap:7px;overflow-x:auto;margin:0 -18px 15px;padding:0 18px;scrollbar-width:none}
+.hqcard{position:relative;overflow:hidden;background:linear-gradient(130deg,#201a19,#131313);border:1px solid #2c2422;border-radius:18px;padding:18px;margin-bottom:11px}
+.hqcard::after{content:"";position:absolute;top:-30px;right:-46px;width:130px;height:200px;background:var(--red);opacity:.1;transform:skewX(-24deg)}
+
+/* ---------- live ---------- */
+#s-live{background:#000}
+.livestage{position:relative;height:47%;flex-shrink:0;background:
+  radial-gradient(130% 120% at 75% 10%,#4a2320 0%,#241312 45%,#0c0c0c 100%);overflow:hidden}
+.livestage .coachsil{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;opacity:.9}
+.livestage .topbar{position:absolute;top:calc(var(--safe-top) + 34px);left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.viewct{background:rgba(0,0,0,.55);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px}
+.livemeta{padding:14px 18px 8px;border-bottom:1px solid #1c1c1c}
+.livemeta b{font-size:16px;font-weight:900;text-transform:uppercase}
+.livemeta .sub{margin-top:3px}
+.chatfeed{flex:1;overflow-y:auto;padding:12px 18px;display:flex;flex-direction:column;gap:10px}
+.cmsg{display:flex;gap:9px;align-items:flex-start;animation:cin .25s ease}
+@keyframes cin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.cmsg .avatar{width:26px;height:26px;font-size:9px;flex-shrink:0}
+.cmsg p{font-size:12.5px;line-height:1.45;color:#ddd}
+.cmsg p b{font-weight:800;color:#fff;margin-right:5px}
+.cmsg.coach p b{color:var(--red)}
+.cmsg.pinned{background:rgba(255,65,54,.09);border:1px solid rgba(255,65,54,.3);border-radius:13px;padding:9px 11px}
+.livebar{display:flex;gap:9px;padding:11px 16px calc(var(--safe-top) + 18px);border-top:1px solid #1c1c1c}
+.livebar input{flex:1;background:#141414;border:1px solid #262626;border-radius:99px;padding:11px 16px;color:#fff;font-family:inherit;font-size:12.5px;outline:none}
+.heartbtn{width:44px;height:44px;border-radius:50%;background:#1c1c1c;border:1px solid #2c2c2c;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px}
+.floatheart{position:absolute;font-size:20px;animation:floatup 1.6s ease-out forwards;pointer-events:none;z-index:20}
+@keyframes floatup{from{opacity:1;transform:translateY(0) scale(.7)}to{opacity:0;transform:translateY(-130px) scale(1.3)}}
+
+/* ---------- crew ---------- */
+.challenge{position:relative;overflow:hidden;background:linear-gradient(135deg,#241211 0%,#141414 65%);border:1px solid #33201e;border-radius:20px;padding:18px;margin-top:14px}
+.challenge::before{content:"";position:absolute;top:-40px;right:-52px;width:150px;height:240px;background:var(--red);opacity:.13;transform:skewX(-24deg)}
+.challenge h3{font-size:19px;font-weight:900;text-transform:uppercase;line-height:1.15;margin:9px 0 4px}
+.pbar{height:7px;background:#262626;border-radius:99px;margin:13px 0 7px;overflow:hidden}
+.pbar i{display:block;height:100%;width:42%;background:var(--red);border-radius:99px}
+.checkin{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid #232323;border-radius:17px;padding:14px 15px;margin-bottom:12px}
+.checkin .t{flex:1}
+.checkin .t b{display:block;font-size:13.5px;font-weight:800}
+.checkin .t span{font-size:11px;color:var(--sub);font-weight:600}
+.post{background:var(--card);border:1px solid #232323;border-radius:18px;padding:15px;margin-bottom:11px}
+.post .ph{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.post .ph .t{flex:1}
+.post .ph b{display:block;font-size:13px;font-weight:800}
+.post .ph span{font-size:10.5px;color:var(--sub);font-weight:600}
+.post p{font-size:13px;line-height:1.55;color:#ddd}
+.post .pimg{height:130px;border-radius:13px;margin:11px 0;display:flex;align-items:center;justify-content:center;font-size:30px}
+.post .acts{display:flex;gap:18px;margin-top:11px}
+.post .act{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#9a9a9a;cursor:pointer;background:none;border:none;font-family:inherit;padding:8px 2px;margin:-8px -2px}
+.post .act.liked{color:var(--red)}
+.proof{display:flex;gap:10px;overflow-x:auto;margin:0 -18px;padding:2px 18px 6px;scrollbar-width:none}
+.proofcard{min-width:170px;background:var(--card);border:1px solid #232323;border-radius:16px;overflow:hidden;flex-shrink:0}
+.proofcard .imgs{display:flex;height:110px}
+.proofcard .imgs div{flex:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;font-size:8.5px;font-weight:800;letter-spacing:.1em}
+.proofcard .b{padding:10px 12px 12px;font-size:11px;color:#ccc;font-weight:600;line-height:1.4}
+.lb{background:var(--card);border:1px solid #232323;border-radius:17px;overflow:hidden}
+.lbrow{display:flex;align-items:center;gap:11px;padding:11px 14px;border-bottom:1px solid #1e1e1e}
+.lbrow:last-child{border-bottom:none}
+.lbrow .rank{width:20px;font-size:12px;font-weight:800;color:var(--sub)}
+.lbrow.me{background:rgba(255,65,54,.08)}
+.lbrow .avatar{width:29px;height:29px;font-size:10px}
+.lbrow .t{flex:1;font-size:12.5px;font-weight:700}
+.lbrow .v{font-size:12px;font-weight:800;color:#fff}
+
+/* ---------- progress ---------- */
+.compare{position:relative;height:250px;border-radius:18px;overflow:hidden;margin-bottom:10px;user-select:none}
+.compare .side{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;padding:0 12px 12px}
+.compare .side.after{justify-content:flex-end}
+.compare .side span{font-size:9px;font-weight:800;letter-spacing:.14em;background:rgba(0,0,0,.6);border-radius:6px;padding:4px 9px}
+.compare .after{clip-path:inset(0 0 0 50%)}
+.compare .divider{position:absolute;top:0;bottom:0;left:50%;width:2.5px;background:#fff;z-index:4;pointer-events:none}
+.compare .divider::after{content:"◂ ▸";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#000;border-radius:99px;font-size:9px;padding:6px 8px;font-weight:800;white-space:nowrap}
+.compare input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;z-index:5}
+.chartcard svg{width:100%;display:block}
+.prwall{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prcard{background:var(--card);border:1px solid #232323;border-radius:16px;padding:13px}
+.prcard .lift{font-size:11px;font-weight:800;text-transform:uppercase;color:#ddd;line-height:1.25;min-height:28px}
+.prcard .wt{font-size:23px;font-weight:800;margin-top:5px}
+.prcard .wt small{font-size:11px;color:var(--sub)}
+.prcard .date{font-size:9.5px;color:var(--sub);font-weight:600;margin-top:3px}
+.starcal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.scday{aspect-ratio:1;border-radius:9px;background:#151515;border:1px solid #222;display:flex;align-items:center;justify-content:center;font-size:12px}
+.scday.st{background:rgba(255,233,50,.1);border-color:rgba(255,233,50,.35)}
+
+/* ---------- chat ---------- */
+#s-chat{background:#000}
+.chatscroll{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:11px}
+.bub{max-width:78%;border-radius:17px;padding:11px 14px;font-size:13px;line-height:1.5;animation:cin .25s ease}
+.bub.them{background:#1c1c1c;align-self:flex-start;border-bottom-left-radius:5px}
+.bub.me{background:var(--red);align-self:flex-end;border-bottom-right-radius:5px}
+.bub .who{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:4px}
+.bub.auto{border:1px solid rgba(255,65,54,.35);background:rgba(255,65,54,.08)}
+.daysep{text-align:center;font-size:9px;font-weight:800;letter-spacing:.16em;color:#8f8f8f;text-transform:uppercase;margin:6px 0}
+.typing{display:flex;gap:4px;padding:13px 15px;background:#1c1c1c;border-radius:17px;border-bottom-left-radius:5px;align-self:flex-start;width:58px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#777;animation:ty 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes ty{30%{transform:translateY(-4px);opacity:1}}
+.qreplies{display:flex;gap:8px;padding:0 18px 10px;overflow-x:auto;scrollbar-width:none}
+.chatinput{display:flex;gap:9px;padding:10px 16px calc(var(--safe-top) + 18px);border-top:1px solid #1c1c1c}
+.chatinput input{flex:1;background:#141414;border:1px solid #262626;border-radius:99px;padding:12px 17px;color:#fff;font-family:inherit;font-size:13px;outline:none}
+.sendbtn{width:46px;height:46px;border-radius:50%;background:var(--red);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.sendbtn svg{width:18px;height:18px;fill:#fff}
+
+/* ---------- fuel ---------- */
+.bigrings{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid #232323;border-radius:20px;padding:18px;margin-top:14px}
+.bigrings .ring{width:96px;height:96px}
+.bigrings .ring .val{font-size:15px;flex-direction:column}
+.bigrings .ring .val small{font-size:8px;color:var(--sub);letter-spacing:.1em;font-weight:800}
+.mrow{display:flex;flex-direction:column;gap:9px;flex:1}
+.mline{display:flex;align-items:center;gap:9px}
+.mline .lbl{width:52px;font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--sub);text-transform:uppercase}
+.mline .bar{flex:1;height:6px;border-radius:99px;background:#262626;overflow:hidden}
+.mline .bar i{display:block;height:100%;border-radius:99px;background:var(--red)}
+.mline .v{font-size:10.5px;font-weight:700;color:#ccc;min-width:64px;text-align:right}
+.meal{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid #232323;border-radius:16px;padding:12px 14px;margin-bottom:9px}
+.meal .ic{width:42px;height:42px;border-radius:12px;background:#232323;display:flex;align-items:center;justify-content:center;font-size:18px}
+.meal .t{flex:1}
+.meal .t b{display:block;font-size:13px;font-weight:700}
+.meal .t span{font-size:10.5px;color:var(--sub);font-weight:600}
+.meal .kc{font-size:12px;font-weight:800}
+
+/* ---------- coach studio + pay sheet ---------- */
+.flabel{font-size:9px;font-weight:800;letter-spacing:.12em;color:var(--sub);text-transform:uppercase;display:block;margin-bottom:6px}
+.finput{width:100%;background:#101010;border:1px solid #2a2a2a;border-radius:11px;color:#fff;font-family:inherit;font-weight:700;font-size:13.5px;padding:11px 12px;outline:none}
+.finput:focus{border-color:var(--red)}
+.paysheet{position:absolute;inset:0;background:rgba(0,0,0,.65);z-index:650;display:none;align-items:flex-end}
+.paysheet.on{display:flex}
+.paysheet .sheet{background:#181818;border-top:1px solid #2e2e2e;border-radius:26px 26px 0 0;padding:24px 20px 40px;width:100%;animation:sheetup .25s cubic-bezier(.3,.9,.3,1)}
+@keyframes sheetup{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.paybtn{background:#fff;color:#000;font-style:normal;letter-spacing:.02em;font-size:15px}
+
+/* ---------- toast ---------- */
+.toast{position:absolute;left:50%;bottom:calc(var(--tabbar-h) + 20px);transform:translateX(-50%) translateY(20px);
+  background:#fff;color:#000;font-size:12px;font-weight:800;border-radius:16px;padding:11px 18px;opacity:0;line-height:1.5;
+  transition:all .25s;z-index:600;pointer-events:none;white-space:normal;max-width:calc(100% - 36px);text-align:center;text-transform:uppercase;letter-spacing:.05em}
+.toast.showx{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.goldt{background:var(--gold)}
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="sidebar">
+    <div class="mark"><svg viewBox="315.07 425.78 1086 588.42"><path id="path27" d="m 0,0 -3.437,-8.74 -65.555,-42.196 c 4.453,20.082 8.905,40.158 13.358,60.232 l 0.225,0.067 4.441,19.71 70.112,21.589 z m 76.775,195.312 -0.008,-0.002 c -7.107,12.449 -14.213,24.906 -21.319,37.339 l -195.028,-11.318 38.155,-66.137 133.293,9.498 -29.095,-76.319 -43.392,-13.361 0.231,1.071 0.03,0.01 c 1.133,5.257 3.459,16.121 3.489,16.295 0,0 7.977,37.097 10.716,49.692 l -66.069,-4.708 -68.682,-318.677 c -0.921,-4.361 -1.856,-8.726 -2.823,-13.101 59.599,41.857 171.683,119.323 195.108,135.506 2.84,1.962 5.015,4.742 6.237,7.97 11.615,30.688 23.23,61.353 34.847,91.997 1.764,4.651 1.379,9.829 -0.993,14.201 -4.485,8.265 -8.62,16.526 -13.371,24.784 11.235,29.658 22.472,59.295 33.708,88.912 z" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,533.3884,754.97427)"/><path id="path19" d="m 0,0 v 0.021 c -3.19,-0.13 -6.38,-0.274 -9.57,-0.407 -2.521,-0.105 -5.042,-0.198 -7.562,-0.305 -0.002,-0.005 -0.005,-0.011 -0.007,-0.016 -17.545,-0.745 -35.089,-1.524 -52.63,-2.369 10.332,-18.448 20.665,-36.916 31,-55.399 -25.138,-67.161 -50.271,-134.423 -75.401,-201.79 0,0 0,0 0,0 20.402,1.081 40.807,2.095 61.214,3.042 0,0 0,0 0,0 20.874,54.765 41.75,109.459 62.629,164.083 3.131,-17.986 6.263,-35.984 9.394,-53.973 -5.024,-0.194 -8.048,-0.378 -13.072,-0.579 -7.685,-20.112 -23.055,-60.363 -23.055,-60.363 16.132,0.688 30.265,1.324 46.399,1.927 2.747,-15.783 5.494,-31.559 8.241,-47.344 21.966,0.802 43.935,1.525 65.905,2.169 C 89.625,-166.729 75.765,-82.186 61.906,2.326 41.269,1.627 20.634,0.838 0,0" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,781.85413,435.94333)"/><path id="path25" d="M 0,0 0.006,0.024 C -5.173,0.038 -10.352,0.035 -15.531,0.04 -18.864,0.044 -22.197,0.051 -25.53,0.051 -37.451,0.05 -49.371,0.034 -61.291,-0.013 l -0.001,-0.006 c -29.78,-0.117 -59.559,-0.378 -89.336,-0.784 10e-4,0.002 10e-4,0.004 0.002,0.006 -11.985,-0.164 -23.969,-0.358 -35.953,-0.568 -3.38,-0.059 -6.76,-0.126 -10.14,-0.189 -5.066,-0.094 -10.133,-0.18 -15.198,-0.283 -0.002,-0.008 -0.004,-0.015 -0.006,-0.023 -3.559,-0.073 -7.118,-0.14 -10.678,-0.216 0.001,0.005 0.001,0.011 0.001,0.017 -2.212,-0.048 -4.424,-0.102 -6.637,-0.151 -2.084,-0.046 -4.168,-0.094 -6.252,-0.142 -12.282,-0.281 -24.562,-0.582 -36.842,-0.912 -0.56,-0.015 -1.119,-0.026 -1.679,-0.042 -0.001,-10e-4 -0.002,-0.003 -0.003,-0.005 -13.758,-0.371 -27.515,-0.769 -41.271,-1.203 2.763,-16.85 5.525,-33.702 8.287,-50.555 l 1.21,-7.385 0.192,-1.169 c 0.616,0.018 1.232,0.035 1.847,0.054 10.78,0.326 21.561,0.626 32.34,0.915 6.908,0.184 13.816,0.352 20.724,0.521 6.565,0.161 13.129,0.324 19.694,0.471 1.927,0.043 3.855,0.078 5.782,0.12 -14.579,-65.492 -29.158,-131.008 -43.736,-196.57 19.519,0.517 39.04,0.972 58.56,1.365 15.277,65.484 30.554,130.918 45.831,196.326 29.99,0.454 59.981,0.776 89.973,0.937 -14.583,-65.259 -29.166,-130.543 -43.749,-195.872 19.524,0.198 39.048,0.334 58.572,0.407 15.278,65.232 30.556,130.414 45.834,195.57 20.583,-0.025 41.167,-0.097 61.749,-0.259 4.655,19.765 9.312,39.527 13.967,59.286 C 41.196,-0.158 20.598,-0.056 0,0" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,1313.4759,425.88587)"/></svg></div>
+    <div class="bc">BOOTCAMP&nbsp;2.0</div>
+    <h1>BATT — design prototype</h1>
+    <p>Darren’s next app: a full <b style="color:#ddd">1:1 coaching engine</b> — everything Trainerize does, the bread and butter — plus an open <b style="color:#ddd">challenge platform</b> where every coach runs their own, anyone can join, and the coach keeps 90%.</p>
+    <div class="pill-row">
+      <div class="pill"><b>•</b>&nbsp;Set logging + rest timer</div>
+      <div class="pill"><b>•</b>&nbsp;BATT LIVE classes</div>
+      <div class="pill"><b>•</b>&nbsp;Open challenges by any coach</div>
+      <div class="pill"><b>•</b>&nbsp;Coach chat</div>
+      <div class="pill"><b>•</b>&nbsp;Progress proof</div>
+    </div>
+    <div class="hint">
+      Tap through everything — start the workout and log a set, let the rest timer run, hit the 315 deadlift for a PR moment, join the live class, join a free and a paid challenge in Crew, publish one from the Coach Studio, and send Darren a form-check video in chat.
+    </div>
+  </aside>
+
+  <div class="phone">
+    <div class="notch"></div>
+
+    <!-- ================= SPLASH ================= -->
+    <section class="screen on" id="s-splash">
+      <div class="mid">
+        <div class="mark"><svg viewBox="315.07 425.78 1086 588.42"><path id="path27" d="m 0,0 -3.437,-8.74 -65.555,-42.196 c 4.453,20.082 8.905,40.158 13.358,60.232 l 0.225,0.067 4.441,19.71 70.112,21.589 z m 76.775,195.312 -0.008,-0.002 c -7.107,12.449 -14.213,24.906 -21.319,37.339 l -195.028,-11.318 38.155,-66.137 133.293,9.498 -29.095,-76.319 -43.392,-13.361 0.231,1.071 0.03,0.01 c 1.133,5.257 3.459,16.121 3.489,16.295 0,0 7.977,37.097 10.716,49.692 l -66.069,-4.708 -68.682,-318.677 c -0.921,-4.361 -1.856,-8.726 -2.823,-13.101 59.599,41.857 171.683,119.323 195.108,135.506 2.84,1.962 5.015,4.742 6.237,7.97 11.615,30.688 23.23,61.353 34.847,91.997 1.764,4.651 1.379,9.829 -0.993,14.201 -4.485,8.265 -8.62,16.526 -13.371,24.784 11.235,29.658 22.472,59.295 33.708,88.912 z" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,533.3884,754.97427)"/><path id="path19" d="m 0,0 v 0.021 c -3.19,-0.13 -6.38,-0.274 -9.57,-0.407 -2.521,-0.105 -5.042,-0.198 -7.562,-0.305 -0.002,-0.005 -0.005,-0.011 -0.007,-0.016 -17.545,-0.745 -35.089,-1.524 -52.63,-2.369 10.332,-18.448 20.665,-36.916 31,-55.399 -25.138,-67.161 -50.271,-134.423 -75.401,-201.79 0,0 0,0 0,0 20.402,1.081 40.807,2.095 61.214,3.042 0,0 0,0 0,0 20.874,54.765 41.75,109.459 62.629,164.083 3.131,-17.986 6.263,-35.984 9.394,-53.973 -5.024,-0.194 -8.048,-0.378 -13.072,-0.579 -7.685,-20.112 -23.055,-60.363 -23.055,-60.363 16.132,0.688 30.265,1.324 46.399,1.927 2.747,-15.783 5.494,-31.559 8.241,-47.344 21.966,0.802 43.935,1.525 65.905,2.169 C 89.625,-166.729 75.765,-82.186 61.906,2.326 41.269,1.627 20.634,0.838 0,0" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,781.85413,435.94333)"/><path id="path25" d="M 0,0 0.006,0.024 C -5.173,0.038 -10.352,0.035 -15.531,0.04 -18.864,0.044 -22.197,0.051 -25.53,0.051 -37.451,0.05 -49.371,0.034 -61.291,-0.013 l -0.001,-0.006 c -29.78,-0.117 -59.559,-0.378 -89.336,-0.784 10e-4,0.002 10e-4,0.004 0.002,0.006 -11.985,-0.164 -23.969,-0.358 -35.953,-0.568 -3.38,-0.059 -6.76,-0.126 -10.14,-0.189 -5.066,-0.094 -10.133,-0.18 -15.198,-0.283 -0.002,-0.008 -0.004,-0.015 -0.006,-0.023 -3.559,-0.073 -7.118,-0.14 -10.678,-0.216 0.001,0.005 0.001,0.011 0.001,0.017 -2.212,-0.048 -4.424,-0.102 -6.637,-0.151 -2.084,-0.046 -4.168,-0.094 -6.252,-0.142 -12.282,-0.281 -24.562,-0.582 -36.842,-0.912 -0.56,-0.015 -1.119,-0.026 -1.679,-0.042 -0.001,-10e-4 -0.002,-0.003 -0.003,-0.005 -13.758,-0.371 -27.515,-0.769 -41.271,-1.203 2.763,-16.85 5.525,-33.702 8.287,-50.555 l 1.21,-7.385 0.192,-1.169 c 0.616,0.018 1.232,0.035 1.847,0.054 10.78,0.326 21.561,0.626 32.34,0.915 6.908,0.184 13.816,0.352 20.724,0.521 6.565,0.161 13.129,0.324 19.694,0.471 1.927,0.043 3.855,0.078 5.782,0.12 -14.579,-65.492 -29.158,-131.008 -43.736,-196.57 19.519,0.517 39.04,0.972 58.56,1.365 15.277,65.484 30.554,130.918 45.831,196.326 29.99,0.454 59.981,0.776 89.973,0.937 -14.583,-65.259 -29.166,-130.543 -43.749,-195.872 19.524,0.198 39.048,0.334 58.572,0.407 15.278,65.232 30.556,130.414 45.834,195.57 20.583,-0.025 41.167,-0.097 61.749,-0.259 4.655,19.765 9.312,39.527 13.967,59.286 C 41.196,-0.158 20.598,-0.056 0,0" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,1313.4759,425.88587)"/></svg></div>
+        <div class="bc">BOOTCAMP</div>
+        <div class="tagline">Fitness without the guesswork</div>
+      </div>
+      <div class="foot">
+        <button class="btn" onclick="enterApp()">Let’s get to work <span class="slash"></span></button>
+        <div class="concept">Battista Bootcamp 2.0 · design concept · Trainerize × Solin</div>
+      </div>
+    </section>
+
+    <!-- ================= TODAY ================= -->
+    <section class="screen" id="s-today">
+      <div class="hdr">
+        <div class="avatar av-dk">MB</div>
+        <div class="battmark"><svg viewBox="315.07 425.78 1086 588.42"><path id="path27" d="m 0,0 -3.437,-8.74 -65.555,-42.196 c 4.453,20.082 8.905,40.158 13.358,60.232 l 0.225,0.067 4.441,19.71 70.112,21.589 z m 76.775,195.312 -0.008,-0.002 c -7.107,12.449 -14.213,24.906 -21.319,37.339 l -195.028,-11.318 38.155,-66.137 133.293,9.498 -29.095,-76.319 -43.392,-13.361 0.231,1.071 0.03,0.01 c 1.133,5.257 3.459,16.121 3.489,16.295 0,0 7.977,37.097 10.716,49.692 l -66.069,-4.708 -68.682,-318.677 c -0.921,-4.361 -1.856,-8.726 -2.823,-13.101 59.599,41.857 171.683,119.323 195.108,135.506 2.84,1.962 5.015,4.742 6.237,7.97 11.615,30.688 23.23,61.353 34.847,91.997 1.764,4.651 1.379,9.829 -0.993,14.201 -4.485,8.265 -8.62,16.526 -13.371,24.784 11.235,29.658 22.472,59.295 33.708,88.912 z" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,533.3884,754.97427)"/><path id="path19" d="m 0,0 v 0.021 c -3.19,-0.13 -6.38,-0.274 -9.57,-0.407 -2.521,-0.105 -5.042,-0.198 -7.562,-0.305 -0.002,-0.005 -0.005,-0.011 -0.007,-0.016 -17.545,-0.745 -35.089,-1.524 -52.63,-2.369 10.332,-18.448 20.665,-36.916 31,-55.399 -25.138,-67.161 -50.271,-134.423 -75.401,-201.79 0,0 0,0 0,0 20.402,1.081 40.807,2.095 61.214,3.042 0,0 0,0 0,0 20.874,54.765 41.75,109.459 62.629,164.083 3.131,-17.986 6.263,-35.984 9.394,-53.973 -5.024,-0.194 -8.048,-0.378 -13.072,-0.579 -7.685,-20.112 -23.055,-60.363 -23.055,-60.363 16.132,0.688 30.265,1.324 46.399,1.927 2.747,-15.783 5.494,-31.559 8.241,-47.344 21.966,0.802 43.935,1.525 65.905,2.169 C 89.625,-166.729 75.765,-82.186 61.906,2.326 41.269,1.627 20.634,0.838 0,0" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,781.85413,435.94333)"/><path id="path25" d="M 0,0 0.006,0.024 C -5.173,0.038 -10.352,0.035 -15.531,0.04 -18.864,0.044 -22.197,0.051 -25.53,0.051 -37.451,0.05 -49.371,0.034 -61.291,-0.013 l -0.001,-0.006 c -29.78,-0.117 -59.559,-0.378 -89.336,-0.784 10e-4,0.002 10e-4,0.004 0.002,0.006 -11.985,-0.164 -23.969,-0.358 -35.953,-0.568 -3.38,-0.059 -6.76,-0.126 -10.14,-0.189 -5.066,-0.094 -10.133,-0.18 -15.198,-0.283 -0.002,-0.008 -0.004,-0.015 -0.006,-0.023 -3.559,-0.073 -7.118,-0.14 -10.678,-0.216 0.001,0.005 0.001,0.011 0.001,0.017 -2.212,-0.048 -4.424,-0.102 -6.637,-0.151 -2.084,-0.046 -4.168,-0.094 -6.252,-0.142 -12.282,-0.281 -24.562,-0.582 -36.842,-0.912 -0.56,-0.015 -1.119,-0.026 -1.679,-0.042 -0.001,-10e-4 -0.002,-0.003 -0.003,-0.005 -13.758,-0.371 -27.515,-0.769 -41.271,-1.203 2.763,-16.85 5.525,-33.702 8.287,-50.555 l 1.21,-7.385 0.192,-1.169 c 0.616,0.018 1.232,0.035 1.847,0.054 10.78,0.326 21.561,0.626 32.34,0.915 6.908,0.184 13.816,0.352 20.724,0.521 6.565,0.161 13.129,0.324 19.694,0.471 1.927,0.043 3.855,0.078 5.782,0.12 -14.579,-65.492 -29.158,-131.008 -43.736,-196.57 19.519,0.517 39.04,0.972 58.56,1.365 15.277,65.484 30.554,130.918 45.831,196.326 29.99,0.454 59.981,0.776 89.973,0.937 -14.583,-65.259 -29.166,-130.543 -43.749,-195.872 19.524,0.198 39.048,0.334 58.572,0.407 15.278,65.232 30.556,130.414 45.834,195.57 20.583,-0.025 41.167,-0.097 61.749,-0.259 4.655,19.765 9.312,39.527 13.967,59.286 C 41.196,-0.158 20.598,-0.056 0,0" style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="matrix(1.3333333,0,0,-1.3333333,1313.4759,425.88587)"/></svg></div>
+        <div class="chatbub" onclick="go('s-chat',true)">
+          <div class="avatar av-red">DB</div>
+          <div class="dot" id="chatdot"></div>
+        </div>
+      </div>
+      <div class="scroll">
+        <div class="greet">
+          <span class="kick">Thursday · Aug 14 · Week 3</span>
+          <h2>Let’s get to<br>work, <em>Matt.</em></h2>
+        </div>
+
+        <div class="workcard" id="todaycard">
+          <div class="meta"><span class="tag red">Week 3 · Day 2</span><span class="tag">45 min</span><span class="tag">Strength</span></div>
+          <h3>Lower Body<br>Strength</h3>
+          <div class="sub">Trap bar day. 4 lifts + a finisher.</div>
+          <div class="coachnote">
+            <div class="avatar av-red">DB</div>
+            <p>“305 moved easy last week. Today we find out what you’ve got. — D”</p>
+          </div>
+          <button class="btn" onclick="go('s-workout',true)">Let’s get to work <span class="slash"></span></button>
+        </div>
+        <div class="done-star" id="donestar" style="display:none">
+          <div class="star">⭐</div>
+          <div>
+            <b style="font-size:13.5px;font-weight:800;display:block">DAY 2 — LOCKED IN</b>
+            <span class="sub">Darren’s reviewing your session. Streak: 13 days.</span>
+          </div>
+        </div>
+
+        <div class="h-sec">Fuel — today</div>
+        <div class="macrostrip" onclick="go('s-fuel',true)">
+          <div class="macro"><div class="ring" data-ring="cal"></div><div class="lbl">Calories</div></div>
+          <div class="macro"><div class="ring" data-ring="pro"></div><div class="lbl">Protein</div></div>
+          <div class="macro"><div class="ring" data-ring="carb"></div><div class="lbl">Carbs</div></div>
+          <div class="macro"><div class="ring" data-ring="fat"></div><div class="lbl">Fat</div></div>
+        </div>
+
+        <div class="progrow" style="margin-top:14px" onclick="go('s-classes');seg('hq')">
+          <div class="ic">🗓</div>
+          <div class="t"><b>Book with Darren</b><span>HQ 1:1 · Friday 7:00 AM · 2 slots left</span></div>
+          <span class="kick" style="letter-spacing:.1em">BOOK ▸</span>
+        </div>
+
+        <div class="h-sec">Daily habits</div>
+        <div id="habits"></div>
+        <div id="todaychal" style="display:none"></div>
+
+        <div class="h-sec">BATT Live &amp; HQ — this week</div>
+        <div class="hcaro" id="todaycaro"></div>
+
+        <div class="h-sec">My progress</div>
+        <div class="tiles">
+          <div class="tile" onclick="go('s-progress')"><div class="lbl">Body weight</div><div class="big num">184.2 <small>lb</small></div><div class="delta d-up">▾ 7.8 lb since Week 0</div></div>
+          <div class="tile" onclick="go('s-progress')"><div class="lbl">Streak</div><div class="big num" id="streaktile">12 <small>days</small></div><div class="delta d-red">🔥 Personal best</div></div>
+          <div class="tile" onclick="go('s-progress')"><div class="lbl">Personal bests</div><div class="big num">9</div><div class="delta d-gold">★ 2 this month</div></div>
+          <div class="tile" onclick="go('s-progress')"><div class="lbl">Steps today</div><div class="big num">7,412</div><div class="delta d-up">Apple Watch · synced</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TRAIN ================= -->
+    <section class="screen" id="s-train">
+      <div class="hdr">
+        <div><span class="kick">My program</span><div class="h-big">Train</div></div>
+        <div class="chatbub" onclick="go('s-chat',true)"><div class="avatar av-red">DB</div></div>
+      </div>
+      <div class="scroll">
+        <div class="weekstrip">
+          <div class="wday donew"><div class="d">MON</div><div class="n">11</div><div class="m"></div></div>
+          <div class="wday donew"><div class="d">TUE</div><div class="n">12</div><div class="m"></div></div>
+          <div class="wday"><div class="d">WED</div><div class="n">13</div><div class="m"></div></div>
+          <div class="wday todayx hasw" id="wd-today"><div class="d">THU</div><div class="n">14</div><div class="m"></div></div>
+          <div class="wday"><div class="d">FRI</div><div class="n">15</div><div class="m"></div></div>
+          <div class="wday hasw"><div class="d">SAT</div><div class="n">16</div><div class="m"></div></div>
+          <div class="wday"><div class="d">SUN</div><div class="n">17</div><div class="m"></div></div>
+        </div>
+
+        <div class="h-sec">This week — Boston Strong · Week 3</div>
+        <div class="progrow" onclick="go('s-workout',true)">
+          <div class="ic">🏋️</div>
+          <div class="t"><b>Lower Body Strength</b><span>Today · 45 min · 6 exercises</span></div>
+          <span class="kick" style="letter-spacing:.1em">GO ▸</span>
+        </div>
+        <div class="progrow"><div class="ic">🔥</div><div class="t"><b>BATT Live: Full Body Burner</b><span>Sat 9:00 AM · live with Darren</span></div><span class="tag red">LIVE</span></div>
+        <div class="progrow" style="opacity:.6"><div class="ic">🧘</div><div class="t"><b>Recovery + Sauna</b><span>Sun · Earned, not given</span></div></div>
+
+        <div class="h-sec">Completed</div>
+        <div class="progrow"><div class="ic">💪</div><div class="t"><b>Upper Push + Core</b><span>Tue · 52 min · note sent to Darren</span></div><span class="star">⭐</span></div>
+        <div class="progrow"><div class="ic">🏃</div><div class="t"><b>MetCon 21</b><span>Mon · 31 min · 342 cal</span></div><span class="star">⭐</span></div>
+        <div class="progrow"><div class="ic">🏋️</div><div class="t"><b>Lower Body Strength</b><span>Last Thu · Trap bar 305×5 — easy</span></div><span class="star">⭐</span></div>
+      </div>
+    </section>
+
+    <!-- ================= WORKOUT OVERVIEW ================= -->
+    <section class="screen pushed" id="s-workout">
+      <div class="hdr">
+        <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg> Back</button>
+        <span class="tag red">Week 3 · Day 2</span>
+      </div>
+      <div class="scroll">
+        <span class="kick">Today’s work</span>
+        <div class="h-big">Lower Body<br>Strength</div>
+        <div class="sub" style="margin-top:6px">45 min · 6 exercises · RPE 8 cap</div>
+
+        <div class="fmt-toggle">
+          <div class="onx" id="fmt-pace" onclick="fmt('pace')">Go at your own pace</div>
+          <div id="fmt-follow" onclick="fmt('follow')">Follow along · video</div>
+        </div>
+
+        <div id="exlist"></div>
+
+        <button class="btn stickybtn" onclick="startWorkout()">Let’s get to work <span class="slash"></span></button>
+      </div>
+    </section>
+
+    <!-- ================= TRACKER ================= -->
+    <section class="screen pushed" id="s-tracker">
+      <div class="hdr">
+        <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg> Exit</button>
+        <span class="sub num" id="elapsed">00:00</span>
+        <span class="tag" id="excount">1 / 6</span>
+      </div>
+      <div class="scroll">
+        <div class="trk-video">
+          <div class="play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>
+          <button class="btn ghost small histbtn" onclick="toggleHist()">History</button>
+          <div class="exname"><span class="kick" id="trk-kick">Exercise 1 · 4 sets</span><b id="trk-name">Trap Bar Deadlift</b></div>
+        </div>
+        <div class="card" id="histcard" style="display:none;margin-top:10px">
+          <div class="kick" style="margin-bottom:9px">Lift history — trap bar deadlift</div>
+          <div class="sub" style="line-height:2">Last week &nbsp;<b class="num" style="color:#fff">305 × 5</b> · felt easy<br>2 weeks ago &nbsp;<b class="num" style="color:#fff">295 × 5</b><br>Best ever &nbsp;<b class="num" style="color:var(--gold)">310 × 3</b> · Jun 30</div>
+        </div>
+        <div class="sub" style="margin:12px 2px 10px" id="trk-note">Darren: "Brace hard, push the floor away. 315 is there if the first three move well."</div>
+        <div id="setlist"></div>
+        <div class="trkfoot">
+          <button class="btn ghost" onclick="prevEx()">◂ Prev</button>
+          <button class="btn" onclick="nextEx()">Next lift ▸</button>
+        </div>
+      </div>
+      <div class="resttimer" id="rest">
+        <span class="kick">Rest — Darren’s prescription</span>
+        <div class="ringbig">
+          <svg width="190" height="190"><circle cx="95" cy="95" r="84" fill="none" stroke="#222" stroke-width="9"/><circle id="restring" cx="95" cy="95" r="84" fill="none" stroke="var(--red)" stroke-width="9" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="0"/></svg>
+          <div class="tval"><b class="num" id="restval">90</b><span>SECONDS</span></div>
+        </div>
+        <div class="nextup" id="restnext">Next: Set 2 — same weight, own the bar speed</div>
+        <div class="rbtns">
+          <button class="btn ghost small" onclick="addRest()">+15s</button>
+          <button class="btn small" onclick="endRest()">Skip rest ▸</button>
+        </div>
+      </div>
+      <div class="prpop" id="prpop">
+        <div class="medal">🏅</div>
+        <h3>NEW PR</h3>
+        <p><b>Trap Bar Deadlift — 315 lb.</b><br>310 stood for six weeks. Not anymore.<br>Logged to your PR wall — Darren’s been notified.</p>
+        <button class="btn gold" onclick="closePR()">Lock it in <span class="slash"></span></button>
+      </div>
+    </section>
+
+    <!-- ================= SUMMARY ================= -->
+    <section class="screen pushed" id="s-summary">
+      <div class="hdr"><span class="kick">Session complete</span><span class="tag gold">⭐ Day 2</span></div>
+      <div class="scroll summary">
+        <div class="h-big">That’s what<br>showing up<br>looks like.</div>
+        <div class="statgrid">
+          <div class="sg"><b class="num" id="sum-time">38:12</b><span>Duration</span></div>
+          <div class="sg"><b class="num" id="sum-vol">12,840</b><span>lb volume</span></div>
+          <div class="sg"><b class="num" id="sum-pr">1</b><span>New PR</span></div>
+        </div>
+        <div class="h-sec">Note to Darren</div>
+        <textarea class="notebox" id="coachnote" placeholder="How did it feel? Darren reads every one."></textarea>
+        <button class="btn" style="margin-top:14px" onclick="finishWorkout()">Lock it in <span class="slash"></span></button>
+        <div class="sub" style="text-align:center;margin-top:12px">Your full session data is sent to Darren for review.</div>
+      </div>
+    </section>
+
+    <!-- ================= CLASSES ================= -->
+    <section class="screen" id="s-classes">
+      <div class="hdr">
+        <div><span class="kick">BATT Live · On-demand · HQ</span><div class="h-big">Classes</div></div>
+        <div class="chatbub" onclick="go('s-chat',true)"><div class="avatar av-red">DB</div></div>
+      </div>
+      <div class="scroll">
+        <div class="seg">
+          <div class="onx" data-seg="live" onclick="seg('live')">Live</div>
+          <div data-seg="ondemand" onclick="seg('ondemand')">On-demand</div>
+          <div data-seg="hq" onclick="seg('hq')">HQ · Boston</div>
+        </div>
+
+        <div id="seg-live">
+          <div class="h-sec">Live now</div>
+          <div class="livesch" style="border-color:rgba(255,65,54,.5)">
+            <div class="when"><b>NOW</b><span>Live</span></div>
+            <div class="t"><b>Full Body Burner</b><span>Darren · 45 min · 132 in class</span></div>
+            <button class="btn small" onclick="go('s-live',true)">Join ▸</button>
+          </div>
+          <div class="h-sec">This week</div>
+          <div id="liveschedule"></div>
+        </div>
+
+        <div id="seg-ondemand" style="display:none">
+          <div class="searchbar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input placeholder="Search the vault — 140+ sessions" id="odsearch" oninput="renderOD()">
+          </div>
+          <div class="chiprow" id="odchips"></div>
+          <div class="odgrid" id="odgrid"></div>
+        </div>
+
+        <div id="seg-hq" style="display:none">
+          <div class="h-sec">Battista Bootcamp HQ</div>
+          <div class="hqcard">
+            <span class="tag red">Boston · Private studio</span>
+            <h3 style="font-size:19px;font-weight:900;text-transform:uppercase;margin:10px 0 5px">Boston Strong<br>Saturdays</h3>
+            <div class="sub" style="margin-bottom:14px">Sat Aug 16 · 10:00 AM · Bootcamp + afterparty · 200+ going</div>
+            <button class="btn small" id="rsvpbtn" onclick="rsvp()">Show up ▸</button>
+          </div>
+          <div class="h-sec">Book a session</div>
+          <div class="livesch"><div class="when"><b>FRI</b><span>Aug 15</span></div><div class="t"><b>1:1 with Darren</b><span>HQ · 7:00 AM · 2 slots left</span></div><button class="btn ghost small" onclick="toast('Booked — synced to your calendar')">Book</button></div>
+          <div class="livesch"><div class="when"><b>SAT</b><span>Aug 16</span></div><div class="t"><b>Small Group Strength</b><span>HQ · 8:00 AM · with Jamie</span></div><button class="btn ghost small" onclick="toast('Booked — synced to your calendar')">Book</button></div>
+          <div class="livesch"><div class="when"><b>SUN</b><span>Aug 17</span></div><div class="t"><b>Ritual — Wellness Social</b><span>Pilates + networking · 400 going</span></div><button class="btn ghost small" onclick="toast('You’re on the list — see you there')">Show up ▸</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LIVE ================= -->
+    <section class="screen pushed" id="s-live">
+      <div class="livestage" id="livestage">
+        <div class="coachsil">
+          <svg width="150" height="190" viewBox="0 0 100 130" fill="#0e0e0e"><ellipse cx="50" cy="34" rx="17" ry="18"/><path d="M18 130 C18 88 30 62 50 62 C70 62 82 88 82 130 Z"/></svg>
+        </div>
+        <div class="topbar">
+          <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg></button>
+          <span class="livepill"><i></i>LIVE</span>
+          <span class="viewct">👁 <b class="num" id="viewct">132</b></span>
+        </div>
+      </div>
+      <div class="livemeta">
+        <b>Full Body Burner</b>
+        <div class="sub">Darren Battista · 45 min · replay saves to the vault</div>
+      </div>
+      <div class="chatfeed" id="livechat">
+        <div class="cmsg pinned coach"><div class="avatar av-red">DB</div><p><b>Darren</b>40 seconds on, 20 off. Nobody quits in the last round. Let’s get to work.</p></div>
+      </div>
+      <div class="livebar">
+        <input placeholder="Say something…" id="liveinput" onkeydown="if(event.key==='Enter')sendLive()">
+        <div class="heartbtn" onclick="heart(event)">❤️</div>
+      </div>
+    </section>
+
+    <!-- ================= CREW ================= -->
+    <section class="screen" id="s-crew">
+      <div class="hdr">
+        <div><span class="kick">Community</span><div class="h-big">The Crew</div></div>
+        <div class="chatbub" onclick="go('s-chat',true)"><div class="avatar av-red">DB</div></div>
+      </div>
+      <div class="scroll">
+        <div class="challenge">
+          <div style="display:flex;gap:7px;position:relative;z-index:1"><span class="tag red">You’re in · 214 crew</span><span class="tag">By Darren</span></div>
+          <h3>6-Week<br>Boston Strong</h3>
+          <div class="sub">Week 3 of 6 · finisher photos due Sep 5</div>
+          <div class="pbar"><i></i></div>
+          <div class="sub" style="font-size:10.5px">Prize: front row at the next HQ event + a free VIP month</div>
+        </div>
+
+        <div class="checkin">
+          <div class="t"><b>Who showed up today?</b><span id="checkct">86 checked in — Darren’s watching 👀</span></div>
+          <button class="btn small" id="checkbtn" onclick="checkin()">I’m in ▸</button>
+        </div>
+
+        <div class="h-sec">Open challenges — any coach, every member</div>
+        <div id="chals"></div>
+        <div class="checkin" style="border-style:dashed">
+          <div class="t"><b>Coach on the team?</b><span>Build your own challenge in minutes — workouts, habits, prize, price.</span></div>
+          <button class="btn ghost small" onclick="go('s-studio',true)">Create ▸</button>
+        </div>
+
+        <div class="h-sec">Proof, not promises</div>
+        <div class="proof">
+          <div class="proofcard"><div class="imgs"><div style="background:linear-gradient(160deg,#2b2b2b,#151515)"><span>WK 0</span></div><div style="background:linear-gradient(160deg,#3a2422,#191111)"><span>WK 6</span></div></div><div class="b">Kate M. — down 14 lb, first strict pull-up ever.</div></div>
+          <div class="proofcard"><div class="imgs"><div style="background:linear-gradient(160deg,#2b2b2b,#151515)"><span>WK 0</span></div><div style="background:linear-gradient(160deg,#3a2422,#191111)"><span>WK 6</span></div></div><div class="b">Chris D. — 405 deadlift at 42. "Best shape of my life."</div></div>
+          <div class="proofcard"><div class="imgs"><div style="background:linear-gradient(160deg,#2b2b2b,#151515)"><span>WK 0</span></div><div style="background:linear-gradient(160deg,#3a2422,#191111)"><span>WK 6</span></div></div><div class="b">Dana R. — kept every habit 42 days straight.</div></div>
+        </div>
+
+        <div class="h-sec">Feed</div>
+        <div id="feed"></div>
+
+        <div class="h-sec">Streak leaderboard</div>
+        <div class="lb">
+          <div class="lbrow"><span class="rank">1</span><div class="avatar av-dk">KM</div><span class="t">Kate M.</span><span class="v num">21 🔥</span></div>
+          <div class="lbrow"><span class="rank">2</span><div class="avatar av-dk">CD</div><span class="t">Chris D.</span><span class="v num">17 🔥</span></div>
+          <div class="lbrow me"><span class="rank">3</span><div class="avatar av-dk">MB</div><span class="t">Matt B. — you</span><span class="v num">12 🔥</span></div>
+          <div class="lbrow"><span class="rank">4</span><div class="avatar av-dk">JT</div><span class="t">Jess T.</span><span class="v num">11 🔥</span></div>
+        </div>
+        <div style="height:14px"></div>
+      </div>
+    </section>
+
+    <!-- ================= PROGRESS ================= -->
+    <section class="screen" id="s-progress">
+      <div class="hdr">
+        <div><span class="kick">Proof, not promises</span><div class="h-big">Progress</div></div>
+        <div class="chatbub" onclick="go('s-chat',true)"><div class="avatar av-red">DB</div></div>
+      </div>
+      <div class="scroll">
+        <div class="seg">
+          <div class="onx" data-pseg="photos" onclick="pseg('photos')">Photos</div>
+          <div data-pseg="stats" onclick="pseg('stats')">Body stats</div>
+          <div data-pseg="prs" onclick="pseg('prs')">Personal bests</div>
+        </div>
+
+        <div id="pseg-photos">
+          <div class="h-sec">Week 0 → Week 3 · drag to compare</div>
+          <div class="compare">
+            <div class="side" style="background:linear-gradient(165deg,#2e2e2e 0%,#141414 80%)"><span>WEEK 0 · 192.0 LB</span></div>
+            <div class="side after" id="cmpafter" style="background:linear-gradient(165deg,#40201d 0%,#161010 80%)"><span>WEEK 3 · 184.2 LB</span></div>
+            <div class="divider" id="cmpdiv"></div>
+            <input type="range" min="8" max="92" value="50" oninput="cmp(this.value)">
+          </div>
+          <button class="btn ghost" onclick="toast('Camera opens with front/side/back guides')">📸 &nbsp;Guided photo — front · side · back</button>
+          <div class="sub" style="text-align:center;margin-top:11px">Next check-in photos due Friday — Darren gets them automatically.</div>
+          <button class="btn small" style="margin:14px auto 0" onclick="toast('Shared to the Crew 💪')">Share to Crew ▸</button>
+        </div>
+
+        <div id="pseg-stats" style="display:none">
+          <div class="h-sec">Body weight — 8 weeks</div>
+          <div class="card chartcard">
+            <svg viewBox="0 0 320 130">
+              <polyline points="10,18 54,30 98,42 142,38 186,58 230,72 274,84 310,96" fill="none" stroke="#2a2a2a" stroke-width="22" stroke-linecap="round" opacity=".35"/>
+              <polyline points="10,18 54,30 98,42 142,38 186,58 230,72 274,84 310,96" fill="none" stroke="var(--red)" stroke-width="3" stroke-linejoin="round"/>
+              <circle cx="310" cy="96" r="5" fill="var(--red)"/>
+              <text x="10" y="122" fill="#777" font-size="9" font-family="Montserrat">192.0</text>
+              <text x="284" y="122" fill="#fff" font-size="9" font-weight="700" font-family="Montserrat">184.2</text>
+            </svg>
+          </div>
+          <div class="tiles">
+            <div class="tile"><div class="lbl">Resting HR</div><div class="big num">58 <small>bpm</small></div><div class="delta d-up">▾ 6 since Week 0</div></div>
+            <div class="tile"><div class="lbl">Sleep avg</div><div class="big num">7:24</div><div class="delta d-up">▴ 41 min</div></div>
+            <div class="tile"><div class="lbl">Waist</div><div class="big num">33.5 <small>in</small></div><div class="delta d-up">▾ 1.5 in</div></div>
+            <div class="tile"><div class="lbl">Body fat</div><div class="big num">17.8 <small>%</small></div><div class="delta d-up">▾ 2.1%</div></div>
+          </div>
+          <div class="sub" style="text-align:center;margin-top:13px">Auto-synced from Apple Watch &amp; Withings.</div>
+        </div>
+
+        <div id="pseg-prs" style="display:none">
+          <div class="h-sec">PR wall</div>
+          <div class="prwall" id="prwall"></div>
+          <div class="h-sec">Consistency — last 4 weeks</div>
+          <div class="card"><div class="starcal" id="starcal"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COACH STUDIO ================= -->
+    <section class="screen pushed" id="s-studio">
+      <div class="hdr">
+        <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg> Back</button>
+        <span class="tag">Coach studio · what your coaches see</span>
+      </div>
+      <div class="scroll">
+        <span class="kick">New challenge</span>
+        <div class="h-big">Build it.<br>They’ll show up.</div>
+        <div class="h-sec">Basics</div>
+        <div class="card">
+          <label class="flabel">Challenge name</label>
+          <input class="finput" id="cs-name" value="Step-tember">
+          <div style="display:flex;gap:9px;margin-top:12px">
+            <div style="flex:1"><label class="flabel">Length</label><input class="finput" id="cs-len" value="30 days"></div>
+            <div style="flex:1"><label class="flabel">Price</label><input class="finput" id="cs-price" value="FREE"></div>
+          </div>
+        </div>
+        <div class="h-sec">The daily drop</div>
+        <div class="card">
+          <label class="flabel">Lands in every member’s Today feed each morning</label>
+          <input class="finput" id="cs-drop" value="10k steps + photo proof in the crew feed">
+        </div>
+        <div class="h-sec">Prize</div>
+        <div class="card"><input class="finput" id="cs-prize" value="Winner picks the HQ playlist for a month"></div>
+        <div class="h-sec">Who can join</div>
+        <div class="card" style="display:flex;align-items:center;gap:12px">
+          <div style="flex:1"><b style="font-size:13px;font-weight:700">Open to everyone</b><br><span class="sub">Members and non-members — no 1:1 plan required</span></div>
+          <span class="tag red">ON</span>
+        </div>
+        <div class="h-sec">Your cut</div>
+        <div class="card" style="display:flex;align-items:center;gap:12px">
+          <div style="flex:1"><b style="font-size:13px;font-weight:700">You keep 90%</b><br><span class="sub">BATT takes 10% on paid challenges. Your challenge, your call, your money.</span></div>
+          <span class="tag red num">90 / 10</span>
+        </div>
+        <button class="btn" style="margin-top:16px" onclick="publishChal()">Publish challenge <span class="slash"></span></button>
+        <div class="sub" style="text-align:center;margin:10px 0 4px">Goes live in Crew instantly. Every coach on the team gets this.</div>
+      </div>
+    </section>
+
+    <!-- ================= CHALLENGE DETAIL ================= -->
+    <section class="screen pushed" id="s-challenge">
+      <div class="hdr">
+        <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg> Back</button>
+        <span class="tag red">Open to all members</span>
+      </div>
+      <div class="scroll">
+        <div class="challenge" style="margin-top:6px">
+          <div style="display:flex;gap:7px;position:relative;z-index:1"><span class="tag red" id="ch-price">FREE</span><span class="tag" id="ch-len">30 days</span></div>
+          <h3 id="ch-title">30-Day MetCon Madness</h3>
+          <div class="sub" id="ch-when">Starts Mon Aug 18 · 58 already in</div>
+        </div>
+        <div class="post">
+          <div class="ph"><div class="avatar av-red" id="ch-av">JH</div><div class="t"><b id="ch-coach">Jamie Hines</b><span>Challenge coach · Battista Bootcamp team</span></div></div>
+          <p id="ch-desc"></p>
+        </div>
+        <div class="h-sec">What you get</div>
+        <div class="progrow"><div class="ic">📆</div><div class="t"><b>The drop</b><span>Every workout and habit task lands in your Today feed</span></div></div>
+        <div class="progrow"><div class="ic">👥</div><div class="t"><b>Private challenge crew</b><span>Feed, check-ins and streaks just for this group</span></div></div>
+        <div class="progrow"><div class="ic">🏆</div><div class="t"><b>Leaderboard + prize</b><span id="ch-prize">Winner takes a free VIP month</span></div></div>
+        <div class="h-sec">Last challenge — final standings</div>
+        <div class="lb">
+          <div class="lbrow"><span class="rank">1</span><div class="avatar av-dk">TR</div><span class="t">Tom R.</span><span class="v num">100%</span></div>
+          <div class="lbrow"><span class="rank">2</span><div class="avatar av-dk">LP</div><span class="t">Lena P.</span><span class="v num">96%</span></div>
+          <div class="lbrow"><span class="rank">3</span><div class="avatar av-dk">MW</div><span class="t">Mike W.</span><span class="v num">92%</span></div>
+        </div>
+        <button class="btn stickybtn" id="ch-join" onclick="joinChalDetail()">I’m in <span class="slash"></span></button>
+        <div class="sub" style="text-align:center;margin:10px 0 4px">No 1:1 coaching membership required.</div>
+        <button class="btn ghost" style="margin-top:10px" onclick="toast('VIP 1:1 — Darren personally. Application opens')">Want a coach on you daily? Go VIP 1:1 ▸</button>
+      </div>
+    </section>
+
+    <!-- ================= CHAT ================= -->
+    <section class="screen pushed" id="s-chat">
+      <div class="hdr" style="border-bottom:1px solid #1c1c1c;padding-bottom:12px">
+        <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg></button>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar av-red">DB</div>
+          <div><b style="font-size:13.5px;font-weight:800;display:block">Darren Battista</b><span class="sub" style="font-size:10px"><span style="color:var(--red)">●</span> Your coach — usually replies fast</span></div>
+        </div>
+        <div style="width:34px"></div>
+      </div>
+      <div class="chatscroll" id="chatscroll">
+        <div class="daysep">Tuesday</div>
+        <div class="bub me">Upper push done. Bench felt heavy but got all the reps in.</div>
+        <div class="bub them"><span class="who">Darren</span>Saw the session — bar speed on your last set was better than the first. That’s a green light. 👊</div>
+        <div class="daysep">Today</div>
+        <div class="bub them auto"><span class="who">Darren · Week 3 check-in</span>Matt — saw the numbers trending. Photos are due Friday, and I want to see you at HQ Saturday. No guesswork, no excuses. Now let’s get to work.</div>
+      </div>
+      <div class="qreplies">
+        <div class="chip" onclick="quick('Locked in for Saturday 💪')">Locked in for Saturday 💪</div>
+        <div class="chip" onclick="quick('Question about tomorrow’s session')">Question about tomorrow</div>
+        <div class="chip" onclick="quick('Photos coming Friday ✅')">Photos Friday ✅</div>
+        <div class="chip" onclick="sendVideo()">📹 Form check</div>
+      </div>
+      <div class="chatinput">
+        <button class="heartbtn" style="width:46px;height:46px;font-size:16px" onclick="sendVideo()" title="Send a form-check video">📹</button>
+        <input placeholder="Message Darren…" id="chatinputf" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="sendbtn" onclick="sendChat()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ================= FUEL ================= -->
+    <section class="screen pushed" id="s-fuel">
+      <div class="hdr">
+        <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg> Back</button>
+        <span class="tag red">Coach target</span>
+      </div>
+      <div class="scroll">
+        <span class="kick">Fuel</span>
+        <div class="h-big">Eat like it<br>matters.</div>
+
+        <div class="bigrings">
+          <div class="ring" id="fuelring"></div>
+          <div class="mrow">
+            <div class="mline"><span class="lbl">Protein</span><div class="bar"><i id="bar-pro" style="width:78%"></i></div><span class="v num" id="v-pro">156 / 200g</span></div>
+            <div class="mline"><span class="lbl">Carbs</span><div class="bar"><i id="bar-carb" style="width:62%;background:#fff"></i></div><span class="v num" id="v-carb">168 / 270g</span></div>
+            <div class="mline"><span class="lbl">Fat</span><div class="bar"><i id="bar-fat" style="width:55%;background:#9a9a9a"></i></div><span class="v num" id="v-fat">44 / 80g</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:9px;margin-top:12px">
+          <button class="btn ghost small" style="flex:1" onclick="snapMeal()">📸 Snap a meal</button>
+          <button class="btn ghost small" style="flex:1" onclick="toast('Barcode scanner opens')">Scan barcode</button>
+          <button class="btn ghost small" style="flex:1" onclick="toast('Say it — AI logs it')">🎙 Voice log</button>
+        </div>
+
+        <div class="h-sec">Logged today</div>
+        <div id="meals">
+          <div class="meal"><div class="ic">🍳</div><div class="t"><b>Eggs, oats + berries</b><span>Breakfast · 42g protein</span></div><span class="kc num">610 cal</span></div>
+          <div class="meal"><div class="ic">🥩</div><div class="t"><b>Steak bowl w/ rice</b><span>Lunch · 54g protein</span></div><span class="kc num">760 cal</span></div>
+          <div class="meal"><div class="ic">🥤</div><div class="t"><b>Whey + banana</b><span>Post-workout · 32g protein</span></div><span class="kc num">340 cal</span></div>
+        </div>
+
+        <div class="h-sec">Tonight — from Darren’s plan</div>
+        <div class="meal" style="border-color:rgba(255,65,54,.35)"><div class="ic">🍗</div><div class="t"><b>Chicken, sweet potato, greens</b><span>Hits your protein gap · recipe + grocery list</span></div><span class="kc num">640 cal</span></div>
+      </div>
+    </section>
+
+    <!-- ================= TAB BAR ================= -->
+    <nav class="tabbar" id="tabbar" style="display:none">
+      <div class="tab onx" data-t="s-today" onclick="go('s-today')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Today</span><div class="ind"></div>
+      </div>
+      <div class="tab" data-t="s-train" onclick="go('s-train')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M2 9.5v5M22 9.5v5M6.5 12h11"/></svg>
+        <span>Train</span><div class="ind"></div>
+      </div>
+      <div class="tab" data-t="s-classes" onclick="go('s-classes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg>
+        <span>Classes</span><div class="ind"></div>
+      </div>
+      <div class="tab" data-t="s-crew" onclick="go('s-crew')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.4"/><circle cx="17" cy="10" r="2.6"/><path d="M3.5 19c.6-3.4 2.8-5.2 5.5-5.2s4.9 1.8 5.5 5.2M14.8 19c.4-2 1.5-3.4 3.2-3.9 1.4.4 2.4 1.6 2.8 3.4"/></svg>
+        <span>Crew</span><div class="ind"></div>
+      </div>
+      <div class="tab" data-t="s-progress" onclick="go('s-progress')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+        <span>Progress</span><div class="ind"></div>
+      </div>
+    </nav>
+
+    <div class="paysheet" id="paysheet" onclick="if(event.target===this)payClose()">
+      <div class="sheet">
+        <span class="kick">Join challenge</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 4px">
+          <b style="font-size:17px;font-weight:900;text-transform:uppercase" id="pay-title">Protein 30/30</b>
+          <b style="font-size:17px;font-weight:800" class="num" id="pay-amt">$19</b>
+        </div>
+        <div class="sub" style="margin-bottom:18px">One-time. Keeps the replays and crew feed forever. 90% goes straight to your coach.</div>
+        <button class="btn paybtn" onclick="payConfirm()"> Pay &nbsp;·&nbsp; <span class="num" id="pay-amt2">$19</span></button>
+        <div class="sub" style="text-align:center;margin-top:12px;font-size:10.5px">Coaches set their own price. Free for VIP 1:1 clients.</div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<script>
+/* ============ nav ============ */
+let stack = [];
+function show(id){
+  const cur=document.querySelector('.screen.on');
+  if(cur && cur.id==='s-tracker' && id!=='s-tracker'){
+    clearInterval(elapsedT); endRest();
+    document.getElementById('prpop').classList.remove('on');
+  }
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const tabs = ['s-today','s-train','s-classes','s-crew','s-progress'];
+  document.getElementById('tabbar').style.display = tabs.includes(id) ? 'flex':'none';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('onx', t.dataset.t===id));
+}
+function go(id,push){
+  const cur = document.querySelector('.screen.on');
+  if(push && cur) stack.push(cur.id);
+  if(!push) stack = [];
+  show(id);
+  if(id==='s-chat') document.getElementById('chatdot').style.display='none';
+}
+function back(){ show(stack.pop() || 's-today'); }
+function enterApp(){ show('s-today'); }
+
+/* ============ toast ============ */
+let toastT;
+function toast(msg,gold){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.toggle('goldt',!!gold); t.classList.add('showx');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('showx'), 2200);
+}
+
+/* ============ rings ============ */
+function ringSVG(pct,size,stroke,color){
+  const r=(size-stroke)/2, c=2*Math.PI*r;
+  return `<svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#262626" stroke-width="${stroke}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}"/></svg>`;
+}
+const ringdefs={cal:[.71,'1,710'],pro:[.78,'156g'],carb:[.62,'168g'],fat:[.55,'44g']};
+document.querySelectorAll('[data-ring]').forEach(el=>{
+  const [pct,val]=ringdefs[el.dataset.ring];
+  el.innerHTML = ringSVG(pct,52,4.5,'var(--red)') + `<div class="val num">${val}</div>`;
+});
+function fuelRing(){
+  document.getElementById('fuelring').innerHTML =
+    ringSVG(fuel.cal/2400,96,7,'var(--red)') + `<div class="val num">${fuel.cal.toLocaleString()}<small>OF 2,400 CAL</small></div>`;
+}
+
+/* ============ habits ============ */
+const habits=[
+  {n:'Drink a gallon of water',s:12,done:false},
+  {n:'10k steps',s:8,done:false},
+  {n:'Protein at every meal',s:12,done:true},
+];
+function renderHabits(){
+  document.getElementById('habits').innerHTML = habits.map((h,i)=>`
+    <div class="habit ${h.done?'donex':''}" onclick="habit(${i})">
+      <div class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg></div>
+      <div class="t"><b>${h.n}</b></div>
+      <div class="streak">🔥 <span class="num">${h.s}</span></div>
+    </div>`).join('');
+}
+function habit(i){
+  const h=habits[i]; h.done=!h.done; h.s+=h.done?1:-1;
+  renderHabits();
+  if(h.done) toast('Habit locked — '+h.s+' day streak 🔥');
+}
+renderHabits();
+
+/* ============ today carousel ============ */
+const caro=[
+  {t:'Full Body Burner',w:'LIVE NOW',who:'Darren',av:'DB',dur:'45 min',live:true},
+  {t:'MetCon Express',w:'Fri 6:30 PM',who:'Jamie',av:'JH',dur:'30 min'},
+  {t:'Strength Foundations',w:'Mon 7:00 AM',who:'Ally',av:'AL',dur:'40 min'},
+  {t:'Ask Darren Anything',w:'Sun 7:00 PM',who:'Darren',av:'DB',dur:'Q&A'},
+];
+document.getElementById('todaycaro').innerHTML = caro.map(c=>`
+  <div class="classcard">
+    <div class="top">${c.live?'<span class="livepill"><i></i>LIVE</span>':`<span class="tag">${c.w}</span>`}<span class="tag">${c.dur}</span></div>
+    <h4>${c.t}</h4>
+    <div class="who"><div class="avatar av-red">${c.av}</div><span>${c.who}</span></div>
+    <button class="btn small" style="width:100%" onclick="${c.live?"go('s-live',true)":"toast('You’re in — added to your program')"}">${c.live?'Join ▸':'I’m in ▸'}</button>
+  </div>`).join('');
+
+/* ============ workout data ============ */
+const workout=[
+  {group:'A',ss:false,ex:[{n:'Trap Bar Deadlift',ic:'🏋️',sets:4,reps:'5',rest:90,base:305,note:'Brace hard, push the floor away. 315 is there if the first three move well.'}]},
+  {group:'B — Superset',ss:true,ex:[
+    {n:'Bulgarian Split Squat',ic:'🦵',sets:3,reps:'8 / leg',rest:60,base:50,note:'Slow 3s down. Torch the quads, spare the ego.'},
+    {n:'DB Romanian Deadlift',ic:'💪',sets:3,reps:'10',rest:60,base:70,note:'Hamstrings load the whole way. No bouncing.'}]},
+  {group:'C',ss:false,ex:[{n:'Leg Press',ic:'🔩',sets:3,reps:'12',rest:75,base:360,note:'Full depth. All 12 or the set doesn’t count.'}]},
+  {group:'D — Finisher',ss:true,ex:[
+    {n:'Seated Calf Raise',ic:'🦶',sets:3,reps:'15',rest:45,base:90,note:'Pause at the bottom.'},
+    {n:'Sled Push',ic:'🛷',sets:4,reps:'20 m',rest:60,base:180,note:'Empty the tank. This is the Bootcamp part.'}]},
+];
+const flat = workout.flatMap(g=>g.ex);
+document.getElementById('exlist').innerHTML = workout.map(g=>`
+  <div class="exgroup ${g.ss?'ss':''}">
+    ${g.ss?`<div class="sslbl">${g.group} · back to back, no rest between</div>`:''}
+    ${g.ex.map(e=>`
+      <div class="exrow" onclick="toast('Demo video + Darren’s cues open')">
+        <div class="thumb">${e.ic}</div>
+        <div class="t"><b>${e.n}</b><span>${e.sets} × ${e.reps} · rest ${e.rest}s</span>
+        <div class="note">“${e.note}”</div></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg>
+      </div>`).join('')}
+  </div>`).join('');
+function fmt(which){
+  document.getElementById('fmt-pace').classList.toggle('onx',which==='pace');
+  document.getElementById('fmt-follow').classList.toggle('onx',which==='follow');
+  if(which==='follow') toast("Follow-along: Darren’s full class video");
+}
+
+/* ============ tracker ============ */
+let exIdx=0, setState=[], startTime=null, elapsedT=null, prHit=false, totalVol=0;
+function startWorkout(){
+  exIdx=0; prHit=false; totalVol=0;
+  setState = flat.map(e=>Array.from({length:e.sets},(_,i)=>({w:e.base,r:parseInt(e.reps)||10,done:false})));
+  go('s-tracker',true);
+  startTime = Date.now();
+  clearInterval(elapsedT);
+  elapsedT = setInterval(()=>{
+    const s=Math.floor((Date.now()-startTime)/1000);
+    document.getElementById('elapsed').textContent =
+      String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  },1000);
+  renderEx();
+}
+function renderEx(){
+  const e=flat[exIdx];
+  document.getElementById('trk-name').textContent=e.n;
+  document.getElementById('trk-kick').textContent=`Exercise ${exIdx+1} · ${e.sets} sets × ${e.reps}`;
+  document.getElementById('trk-note').textContent=`Darren: “${e.note}”`;
+  document.getElementById('excount').textContent=`${exIdx+1} / ${flat.length}`;
+  document.getElementById('histcard').style.display='none';
+  const sets=setState[exIdx];
+  const nextIdx = sets.findIndex(s=>!s.done);
+  document.getElementById('setlist').innerHTML = sets.map((s,i)=>`
+    <div class="setrow ${s.done?'donerow':''} ${i===nextIdx?'active':''}">
+      <span class="sn">S${i+1}</span>
+      <div class="field"><label>Weight · lb</label><div class="v">
+        <button class="stepbtn" onclick="bump(${i},'w',-5)">−</button><b class="num">${s.w}</b><button class="stepbtn" onclick="bump(${i},'w',5)">+</button>
+      </div></div>
+      <div class="field"><label>Reps</label><div class="v">
+        <button class="stepbtn" onclick="bump(${i},'r',-1)">−</button><b class="num">${s.r}</b><button class="stepbtn" onclick="bump(${i},'r',1)">+</button>
+      </div></div>
+      <button class="setchk" onclick="doneSet(${i})"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.4"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg></button>
+    </div>`).join('');
+}
+function bump(i,k,d){
+  const s=setState[exIdx][i];
+  s[k]=Math.max(0,s[k]+d);
+  renderEx();
+}
+function doneSet(i){
+  const s=setState[exIdx][i];
+  if(s.done){s.done=false; totalVol=Math.max(0,totalVol-s.w*s.r); renderEx(); return;}
+  s.done=true; totalVol += s.w*s.r;
+  const e=flat[exIdx];
+  if(e.n==='Trap Bar Deadlift' && s.w>=315 && !prHit){ prHit=true; renderEx(); showPR(); return; }
+  renderEx();
+  const nxt = setState[exIdx].findIndex(x=>!x.done);
+  if(nxt>=0) startRest(e.rest, `Next: Set ${nxt+1} — same weight, own the bar speed`);
+  else if(exIdx<flat.length-1) startRest(e.rest, `Next up: ${flat[exIdx+1].n}`);
+  else { clearInterval(restT); openSummary(); }
+}
+let restT=null, restLeft=0, restTotal=90;
+function startRest(secs,nextLabel){
+  restLeft=secs; restTotal=secs;
+  document.getElementById('restnext').textContent=nextLabel;
+  document.getElementById('rest').classList.add('on');
+  tickRest();
+  clearInterval(restT); restT=setInterval(()=>{ restLeft--; if(restLeft<=0){endRest();} else tickRest(); },1000);
+}
+function tickRest(){
+  document.getElementById('restval').textContent=restLeft;
+  const c=527.8;
+  document.getElementById('restring').style.strokeDashoffset = c*(1-restLeft/restTotal);
+}
+function addRest(){ restLeft+=15; restTotal=Math.max(restTotal,restLeft); tickRest(); }
+function endRest(){ clearInterval(restT); document.getElementById('rest').classList.remove('on'); }
+function nextEx(){ if(exIdx<flat.length-1){exIdx++; renderEx();} else openSummary(); }
+function prevEx(){ if(exIdx>0){exIdx--; renderEx();} }
+function toggleHist(){ const h=document.getElementById('histcard'); h.style.display=h.style.display==='none'?'block':'none'; }
+function showPR(){ document.getElementById('prpop').classList.add('on'); }
+function closePR(){
+  document.getElementById('prpop').classList.remove('on');
+  toast('PR logged — Darren notified 🏅', true);
+  startRest(flat[exIdx].rest,'Breathe. That one earned the rest.');
+}
+function openSummary(){
+  clearInterval(elapsedT);
+  const s=Math.floor((Date.now()-startTime)/1000);
+  document.getElementById('sum-time').textContent =
+    String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  document.getElementById('sum-vol').textContent = totalVol.toLocaleString();
+  document.getElementById('sum-pr').textContent = prHit?'1':'0';
+  stack=[]; show('s-summary');
+}
+function finishWorkout(){
+  document.getElementById('donestar').style.display='flex';
+  const card=document.getElementById('todaycard');
+  const cbtn=card.querySelector('.btn');
+  if(cbtn) cbtn.outerHTML='<div class="tag gold" style="padding:8px 12px">⭐ COMPLETE — SENT TO DARREN</div>';
+  document.getElementById('wd-today').classList.add('donew');
+  document.getElementById('streaktile').innerHTML='13 <small>days</small>';
+  show('s-today');
+  toast('Day 2 locked in ⭐ Streak: 13', true);
+}
+
+/* ============ classes ============ */
+function seg(which){
+  ['live','ondemand','hq'].forEach(k=>{
+    document.getElementById('seg-'+k).style.display = k===which?'block':'none';
+    document.querySelector(`[data-seg="${k}"]`).classList.toggle('onx',k===which);
+  });
+}
+const sched=[
+  {d:'FRI',dt:'6:30 PM',t:'MetCon Express',who:'Jamie · 30 min'},
+  {d:'SAT',dt:'9:00 AM',t:'Full Body Burner',who:'Darren · 45 min'},
+  {d:'SUN',dt:'7:00 PM',t:'Ask Darren Anything',who:'Live Q&A · challenge crew'},
+  {d:'MON',dt:'7:00 AM',t:'Strength Foundations',who:'Ally · 40 min'},
+];
+document.getElementById('liveschedule').innerHTML = sched.map((s,i)=>`
+  <div class="livesch">
+    <div class="when"><b>${s.d}</b><span>${s.dt}</span></div>
+    <div class="t"><b>${s.t}</b><span>${s.who}</span></div>
+    <button class="btn ghost small" id="sch${i}" onclick="imIn(${i})">I’m in</button>
+  </div>`).join('');
+function imIn(i){
+  const b=document.getElementById('sch'+i);
+  b.textContent='You’re in ✓'; b.style.borderColor='var(--red)'; b.style.color='var(--red)';
+  toast('You’re in — reminder set, synced to calendar');
+}
+const od=[
+  {t:'Trap Bar 101 — cues',c:'Strength',dur:'12 min',who:'Darren',tags:['beginner'],g:'#33211f'},
+  {t:'Burner: Dumbbells Only',c:'MetCon',dur:'28 min',who:'Darren',tags:['under30','db'],g:'#1f2733'},
+  {t:'Bootcamp Replay — Aug 9',c:'Bootcamp',dur:'52 min',who:'Darren',tags:[],g:'#2c1f33'},
+  {t:'Low-Impact Rebuild',c:'Low-Impact',dur:'24 min',who:'Ally',tags:['under30','beginner'],g:'#1f3327'},
+  {t:'Glutes + Hams Builder',c:'Strength',dur:'38 min',who:'Jamie',tags:['db'],g:'#33301f'},
+  {t:'MetCon 21 Replay',c:'MetCon',dur:'21 min',who:'Darren',tags:['under30'],g:'#331f1f'},
+];
+const chips=[['all','All'],['under30','Under 30 min'],['db','Dumbbells only'],['beginner','Beginner'],['Strength','Strength'],['MetCon','MetCon']];
+let odFilter='all';
+document.getElementById('odchips').innerHTML=chips.map(([k,l])=>`<div class="chip ${k==='all'?'onx':''}" data-c="${k}" onclick="odChip('${k}')">${l}</div>`).join('');
+function odChip(k){
+  odFilter=k;
+  document.querySelectorAll('#odchips .chip').forEach(c=>c.classList.toggle('onx',c.dataset.c===k));
+  renderOD();
+}
+function renderOD(){
+  const q=(document.getElementById('odsearch').value||'').toLowerCase();
+  const list=od.filter(v=>{
+    const okF = odFilter==='all' || v.c===odFilter || v.tags.includes(odFilter);
+    const okQ = !q || (v.t+v.c+v.who).toLowerCase().includes(q);
+    return okF&&okQ;
+  });
+  document.getElementById('odgrid').innerHTML = list.map(v=>`
+    <div class="odcard" onclick="toast('Playing: ${v.t.replace(/'/g,"\\'")}')">
+      <div class="vthumb" style="background:linear-gradient(135deg,${v.g},#121212)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="rgba(255,255,255,.85)"><path d="M8 5v14l11-7z"/></svg>
+        <span class="dur">${v.dur}</span>
+      </div>
+      <div class="b"><b>${v.t}</b><span>${v.who} · ${v.c}</span></div>
+    </div>`).join('')
+    || '<div class="sub" style="grid-column:1/-1;text-align:center;padding:30px 0">Nothing yet — clear a filter.</div>';
+}
+renderOD();
+function rsvp(){
+  const b=document.getElementById('rsvpbtn');
+  b.textContent='You’re on the list ✓'; b.classList.add('ghost'); b.style.borderColor='var(--red)'; b.style.color='var(--red)';
+  toast('You’re on the list — 200+ going. Bring a friend.');
+}
+
+/* ============ live ============ */
+const liveLines=[
+  ['KM','Kate M.','round 3 done 🥵',false],
+  ['DB','Darren','Kate leading from the front as usual. 40 seconds — GO.',true],
+  ['CD','Chris D.','legs are GONE lol',false],
+  ['JT','Jess T.','first live class — this is unreal',false],
+  ['DB','Darren','Welcome Jess 👊 Last round crew. Nobody quits. Let’s get to work.',true],
+];
+let liveTimer=null, liveIx=0, viewers=132;
+function liveLoop(){
+  if(!document.getElementById('s-live').classList.contains('on')) return;
+  if(liveIx<liveLines.length){
+    const [av,who,msg,coach]=liveLines[liveIx++];
+    addLiveMsg(av,who,msg,coach);
+  }
+  viewers += Math.floor(Math.random()*4)-1;
+  document.getElementById('viewct').textContent=viewers;
+  liveTimer=setTimeout(liveLoop, 2400);
+}
+function addLiveMsg(av,who,msg,coach){
+  const d=document.createElement('div');
+  d.className='cmsg'+(coach?' coach':'');
+  d.innerHTML=`<div class="avatar ${coach?'av-red':'av-dk'}">${av}</div><p><b>${who}</b>${msg}</p>`;
+  const feed=document.getElementById('livechat');
+  feed.appendChild(d); feed.scrollTop=feed.scrollHeight;
+}
+function sendLive(){
+  const f=document.getElementById('liveinput');
+  if(!f.value.trim())return;
+  addLiveMsg('MB','You',f.value,false); f.value='';
+  setTimeout(()=>addLiveMsg('DB','Darren','I see you Matt 👊',true), 1600);
+}
+function heart(ev){
+  const h=document.createElement('div');
+  h.className='floatheart'; h.textContent='❤️';
+  const stage=document.getElementById('livestage');
+  h.style.left=(30+Math.random()*60)+'%'; h.style.bottom='16px';
+  stage.appendChild(h); setTimeout(()=>h.remove(),1600);
+}
+
+/* ============ crew ============ */
+const feed=[
+  {av:'DB',who:'Darren Battista',when:'Pinned · coach',coach:true,txt:'Week 3. This is where most programs die and this crew gets stronger. Check in below, photos Friday, HQ Saturday. Proof, not promises.',img:null,likes:74},
+  {av:'KM',who:'Kate M.',when:'2h · Boston Strong',coach:false,txt:'Deadlift day done. Started this challenge pulling 135 — today 185 moved like nothing. 🔥',img:'🏋️‍♀️',likes:31},
+  {av:'CD',who:'Chris D.',when:'5h · Boston Strong',coach:false,txt:'Week 3 check-in ✅ Down 6 lb, sleep way up. The habit streaks are lowkey the best part of this app.',img:null,likes:18},
+];
+let checked=false;
+function renderFeed(){
+  document.getElementById('feed').innerHTML=feed.map((p,i)=>`
+    <div class="post" ${p.coach?'style="border-color:rgba(255,65,54,.4)"':''}>
+      <div class="ph"><div class="avatar ${p.coach?'av-red':'av-dk'}">${p.av}</div>
+        <div class="t"><b>${p.who} ${p.coach?'<span class="tag red" style="margin-left:5px">COACH</span>':''}</b><span>${p.when}</span></div></div>
+      <p>${p.txt}</p>
+      ${p.img?`<div class="pimg" style="background:linear-gradient(135deg,#262024,#151315)">${p.img}</div>`:''}
+      <div class="acts">
+        <button class="act ${p.liked?'liked':''}" onclick="like(${i})">${p.liked?'❤️':'🤍'} <span class="num">${p.likes}</span></button>
+        <button class="act" onclick="toast('Comments open')">💬 ${[12,7,4][i]||3}</button>
+      </div>
+    </div>`).join('');
+}
+function like(i){
+  const p=feed[i]; p.liked=!p.liked; p.likes+=p.liked?1:-1; renderFeed();
+}
+function checkin(){
+  if(checked) return;
+  checked=true;
+  document.getElementById('checkbtn').textContent='Checked in ✓';
+  document.getElementById('checkct').textContent='87 checked in — you’re one of them 💪';
+  toast('Checked in — Darren sees it', false);
+}
+renderFeed();
+
+/* ============ open challenges (Solin-style, any coach, open enrollment) ============ */
+const chals=[
+  {t:'30-Day MetCon Madness',coach:'Jamie Hines',av:'JH',when:'Starts Mon Aug 18',len:'30 days',crew:58,price:'FREE',prize:'Winner takes a free VIP month',desc:'One 20-minute burner a day. No equipment for weeks 1–2. Miss a day and you owe the crew 50 burpees — Jamie counts.',joined:false},
+  {t:'Kickstart: Zero to Bootcamp',coach:'Ally Lindsey',av:'AL',when:'Rolling start — begin any Monday',len:'14 days',crew:112,price:'FREE',prize:'Finishers unlock a free 1:1 intro session',desc:'Brand new? Two weeks of low-impact foundations that end with your first full bootcamp class. Built for total beginners — no membership needed.',joined:false},
+  {t:'Protein 30/30',coach:'Sam Batchelder',av:'SB',when:'Starts Sep 1',len:'30 days',crew:41,price:'$19',prize:'Top logger wins a stocked grocery haul',desc:'30g of protein, 3 times a day, 30 days straight. Photo-log every meal — Sam audits the feed weekly.',joined:false},
+  {t:'Grip &amp; Rip: Deadlift Club',coach:'Garrett Magill',av:'GM',when:'Starts Aug 25',len:'6 weeks',crew:27,price:'$29',prize:'Biggest PR takes the belt',desc:'Six weeks, one goal: a deadlift PR. Two lifting days a week that layer on top of whatever program you already run.',joined:false},
+];
+let chOpen=0;
+function renderChals(){
+  document.getElementById('chals').innerHTML=chals.map((c,i)=>`
+    <div class="livesch" style="align-items:flex-start">
+      <div class="avatar av-red" style="margin-top:2px">${c.av}</div>
+      <div class="t" onclick="openChal(${i})" style="cursor:pointer">
+        <b>${c.t}</b><span>${c.coach} · ${c.len} · <span class="num">${c.crew}</span> in</span>
+        <div style="margin-top:7px;display:flex;gap:6px"><span class="tag red">${c.price}</span><span class="tag">Open to all</span></div>
+      </div>
+      <button class="btn ${c.joined?'ghost':''} small" id="chb${i}" onclick="joinChal(${i})">${c.joined?'In ✓':'I’m in'}</button>
+    </div>`).join('');
+}
+let payIdx=null;
+function joinChal(i){
+  const c=chals[i];
+  if(c.joined) return;
+  if(c.price!=='FREE'){
+    payIdx=i;
+    document.getElementById('pay-title').innerHTML=c.t;
+    document.getElementById('pay-amt').textContent=c.price;
+    document.getElementById('pay-amt2').textContent=c.price;
+    document.getElementById('paysheet').classList.add('on');
+    return;
+  }
+  doJoin(i);
+}
+function doJoin(i){
+  const c=chals[i];
+  c.joined=true; c.crew++;
+  renderChals();
+  if(document.getElementById('s-challenge').classList.contains('on')) fillChal(i);
+  const tc=document.getElementById('todaychal');
+  tc.style.display='block';
+  tc.innerHTML=`<div class="habit" style="border-color:rgba(255,65,54,.35)" onclick="openChal(${i})">
+    <div class="avatar av-red" style="width:26px;height:26px;font-size:9px;flex-shrink:0">${c.av}</div>
+    <div class="t"><b style="text-decoration:none">${c.t}</b><span class="sub" style="font-size:10.5px">Day 1 drops here — ${c.coach.split(' ')[0]}’s challenge</span></div>
+    <span class="tag red">JOINED</span></div>`;
+  toast("You’re in — no 1:1 needed. "+c.coach.split(' ')[0]+' will see you Day 1');
+}
+function payClose(){ document.getElementById('paysheet').classList.remove('on'); }
+function payConfirm(){
+  payClose();
+  if(payIdx!==null){ doJoin(payIdx); payIdx=null; }
+}
+function publishChal(){
+  const name=document.getElementById('cs-name').value||'Untitled challenge';
+  chals.unshift({t:name,coach:'Sam Batchelder',av:'SB',
+    when:'Starts Monday',len:document.getElementById('cs-len').value||'30 days',crew:1,
+    price:(document.getElementById('cs-price').value||'FREE').toUpperCase(),
+    prize:document.getElementById('cs-prize').value||'Bragging rights',
+    desc:'Daily drop: '+(document.getElementById('cs-drop').value||'show up'),joined:false});
+  renderChals();
+  back();
+  toast('Live — "'+name+'" is now in Crew');
+}
+function openChal(i){ chOpen=i; fillChal(i); go('s-challenge',true); }
+function fillChal(i){
+  const c=chals[i];
+  document.getElementById('ch-title').innerHTML=c.t;
+  document.getElementById('ch-when').textContent=c.when+' · '+c.crew+' already in';
+  document.getElementById('ch-len').textContent=c.len;
+  document.getElementById('ch-price').textContent=c.price;
+  document.getElementById('ch-coach').textContent=c.coach;
+  document.getElementById('ch-av').textContent=c.av;
+  document.getElementById('ch-desc').textContent=c.desc;
+  document.getElementById('ch-prize').textContent=c.prize;
+  const b=document.getElementById('ch-join');
+  if(c.joined){ b.classList.add('ghost'); b.innerHTML="You’re in ✓ — Day 1 hits your Today feed"; }
+  else{ b.classList.remove('ghost'); b.innerHTML='I’m in <span class="slash"></span>'; }
+}
+function joinChalDetail(){ joinChal(chOpen); }
+renderChals();
+
+/* ============ progress ============ */
+function pseg(which){
+  ['photos','stats','prs'].forEach(k=>{
+    document.getElementById('pseg-'+k).style.display=k===which?'block':'none';
+    document.querySelector(`[data-pseg="${k}"]`).classList.toggle('onx',k===which);
+  });
+}
+function cmp(v){
+  document.getElementById('cmpafter').style.clipPath=`inset(0 0 0 ${v}%)`;
+  document.getElementById('cmpdiv').style.left=v+'%';
+}
+const prs=[
+  {l:'Trap Bar Deadlift',w:'310',u:'lb',d:'Jun 30',hot:true},
+  {l:'Bench Press',w:'225',u:'lb',d:'Aug 5',hot:true},
+  {l:'Back Squat',w:'275',u:'lb',d:'Jul 22'},
+  {l:'Weighted Pull-Up',w:'+45',u:'lb',d:'Jul 10'},
+  {l:'500m Row',w:'1:32',u:'',d:'Aug 2'},
+  {l:'Sled Push 20m',w:'270',u:'lb',d:'Jul 29'},
+];
+document.getElementById('prwall').innerHTML=prs.map(p=>`
+  <div class="prcard" ${p.hot?'style="border-color:rgba(255,233,50,.4)"':''}>
+    <div style="display:flex;justify-content:space-between"><div class="lift">${p.l}</div>${p.hot?'<span>🏅</span>':''}</div>
+    <div class="wt num">${p.w} <small>${p.u}</small></div>
+    <div class="date">${p.d}</div>
+  </div>`).join('');
+const cal=document.getElementById('starcal');
+const starDays=[1,2,4,5,7,8,9,11,12,14,15,16,18,19,21,22,25,26];
+cal.innerHTML=Array.from({length:28},(_,i)=>`<div class="scday ${starDays.includes(i)?'st':''}">${starDays.includes(i)?'⭐':''}</div>`).join('');
+
+/* ============ chat ============ */
+function quick(msg){ pushChat(msg); }
+function sendChat(){
+  const f=document.getElementById('chatinputf');
+  if(!f.value.trim())return;
+  pushChat(f.value); f.value='';
+}
+function pushChat(msg){
+  const sc=document.getElementById('chatscroll');
+  sc.insertAdjacentHTML('beforeend',`<div class="bub me">${msg}</div>`);
+  document.getElementById('chatdot').style.display='none';
+  sc.scrollTop=sc.scrollHeight;
+  setTimeout(()=>{
+    sc.insertAdjacentHTML('beforeend','<div class="typing" id="ty"><i></i><i></i><i></i></div>');
+    sc.scrollTop=sc.scrollHeight;
+  },700);
+  setTimeout(()=>{
+    document.getElementById('ty')?.remove();
+    const replies=[
+      'That’s what I like to hear. 👊',
+      'Good. Saturday, 10am, HQ. Don’t be late.',
+      'Send me a video of your top set next time — I want to check bar path.',
+    ];
+    sc.insertAdjacentHTML('beforeend',`<div class="bub them"><span class="who">Darren</span>${replies[Math.floor(Math.random()*replies.length)]}</div>`);
+    sc.scrollTop=sc.scrollHeight;
+  },2300);
+}
+
+function sendVideo(){
+  const sc=document.getElementById('chatscroll');
+  sc.insertAdjacentHTML('beforeend',`<div class="bub me" style="padding:9px">
+    <div style="width:180px;height:104px;border-radius:11px;background:linear-gradient(135deg,#5c2a25,#2a1210);display:flex;align-items:center;justify-content:center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="rgba(255,255,255,.9)"><path d="M8 5v14l11-7z"/></svg></div>
+    <div style="font-size:11px;font-weight:700;margin-top:7px">📹 Trap bar — top set, 315</div></div>`);
+  document.getElementById('chatdot').style.display='none';
+  sc.scrollTop=sc.scrollHeight;
+  setTimeout(()=>{
+    sc.insertAdjacentHTML('beforeend','<div class="typing" id="tyv"><i></i><i></i><i></i></div>');
+    sc.scrollTop=sc.scrollHeight;
+  },800);
+  setTimeout(()=>{
+    document.getElementById('tyv')?.remove();
+    sc.insertAdjacentHTML('beforeend','<div class="bub them"><span class="who">Darren</span>Watched it twice. Hips a hair early off the floor — lockout was clean. Cue for next week: bar and hips leave together. That’s how 325 happens. 👊</div>');
+    sc.scrollTop=sc.scrollHeight;
+  },3000);
+}
+
+/* ============ fuel ============ */
+let fuel={cal:1710,pro:156,carb:168,fat:44};
+fuelRing();
+let mealSnapped=false;
+function snapMeal(){
+  if(mealSnapped){ toast('Tonight’s meal is already logged'); return; }
+  mealSnapped=true;
+  fuel.cal+=640; fuel.pro+=44; fuel.carb+=52; fuel.fat+=18;
+  fuelRing();
+  document.getElementById('bar-pro').style.width=Math.min(100,fuel.pro/200*100)+'%';
+  document.getElementById('bar-carb').style.width=Math.min(100,fuel.carb/270*100)+'%';
+  document.getElementById('bar-fat').style.width=Math.min(100,fuel.fat/80*100)+'%';
+  document.getElementById('v-pro').textContent=fuel.pro+' / 200g';
+  document.getElementById('v-carb').textContent=fuel.carb+' / 270g';
+  document.getElementById('v-fat').textContent=fuel.fat+' / 80g';
+  document.getElementById('meals').insertAdjacentHTML('beforeend',
+    '<div class="meal"><div class="ic">🍗</div><div class="t"><b>Chicken, sweet potato, greens</b><span>Dinner · AI-logged from photo · 44g protein</span></div><span class="kc num">640 cal</span></div>');
+  toast('Meal logged from photo — macros updated');
+}
+
+/* live screen watcher: start chat script when opened */
+const liveObs=new MutationObserver(()=>{
+  const on=document.getElementById('s-live').classList.contains('on');
+  if(on && !liveTimer){
+    liveIx=0;
+    document.getElementById('livechat').innerHTML='<div class="cmsg pinned coach"><div class="avatar av-red">DB</div><p><b>Darren</b>40 seconds on, 20 off. Nobody quits in the last round. Let’s get to work.</p></div>';
+    liveLoop();
+  }
+  if(!on && liveTimer){ clearTimeout(liveTimer); liveTimer=null; }
+});
+liveObs.observe(document.getElementById('s-live'),{attributes:true,attributeFilter:['class']});
+</script>
+</body>
+</html>
