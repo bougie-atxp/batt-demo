@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <title>BATT — Battista Bootcamp 2.0</title>
 <link rel="icon" href="icon.png">
@@ -15,17 +15,17 @@
 :root{
   color-scheme:dark;
   --bg:#000; --card:#161616; --card2:#1c1c1c; --line:#2a2a2a; --line2:#333;
-  --txt:#fff; --sub:#9a9a9a; --red:#ff4136; --red-dk:#c92e25; --gold:#ffe932;
-  --safe-top:14px; --tabbar-h:78px;
+  --txt:#fff; --sub:#9a9a9a; --red:#ff4136; --gold:#ffe932;
+  --safe-top:max(14px, env(safe-area-inset-top)); --safe-bot:env(safe-area-inset-bottom, 0px); --tabbar-h:78px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+html,body{height:100%;overscroll-behavior:none}
 body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(--txt);
-  display:flex;align-items:center;justify-content:center;min-height:100vh}
+  display:flex;min-height:100vh}
 ::-webkit-scrollbar{display:none}
 
 /* ---------- stage / phone frame ---------- */
-.stage{display:flex;gap:56px;align-items:center;justify-content:center;padding:32px}
+.stage{display:flex;gap:56px;align-items:center;justify-content:center;padding:32px;margin:auto}
 .sidebar{max-width:320px;color:#cfcfcf}
 .sidebar .mark{width:150px;margin-bottom:6px}
 .sidebar .mark svg{width:100%;display:block}
@@ -101,7 +101,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 
 /* ---------- tab bar ---------- */
 .tabbar{position:absolute;left:0;right:0;bottom:0;height:var(--tabbar-h);background:rgba(10,10,10,.92);
-  backdrop-filter:blur(18px);border-top:1px solid #1f1f1f;display:flex;z-index:300;padding-bottom:14px;
+  backdrop-filter:blur(18px);border-top:1px solid #1f1f1f;display:flex;z-index:300;padding-bottom:max(14px, var(--safe-bot));
   transform:translate3d(0,110%,0);pointer-events:none;
   transition:transform .48s cubic-bezier(.32,.72,0,1)}
 .tabbar.showtb{transform:none;pointer-events:auto}
@@ -373,7 +373,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes ty{30%{transform:translateY(-4px);opacity:1}}
 .qreplies{display:flex;gap:8px;padding:0 18px 10px;overflow-x:auto;scrollbar-width:none}
-.chatinput{display:flex;gap:9px;padding:10px 16px calc(var(--safe-top) + 18px);border-top:1px solid #1c1c1c}
+.chatinput{display:flex;gap:9px;padding:10px 16px calc(18px + max(14px, var(--safe-bot)));border-top:1px solid #1c1c1c}
 .chatinput input{flex:1;background:#141414;border:1px solid #262626;border-radius:99px;padding:12px 17px;color:#fff;font-family:inherit;font-size:13px;outline:none}
 .sendbtn{width:46px;height:46px;border-radius:50%;background:var(--red);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .sendbtn svg{width:18px;height:18px;fill:#fff}
@@ -452,7 +452,6 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 @keyframes ios-push-out{from{transform:none}to{transform:translate3d(-30%,0,0)}}
 @keyframes ios-pop-in{from{transform:translate3d(-30%,0,0)}to{transform:none}}
 @keyframes ios-pop-out{from{transform:none}to{transform:translate3d(100%,0,0)}}
-@keyframes ios-tab-in{from{opacity:0}to{opacity:1}}
 @keyframes ios-tab-out{from{opacity:1}to{opacity:0}}
 @keyframes ios-enter{from{opacity:0;transform:translate3d(0,14px,0) scale(.975)}to{opacity:1;transform:none}}
 @keyframes splash-out{to{opacity:0;transform:scale(1.045)}}
@@ -591,7 +590,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
       </div>
       <div class="scroll">
         <div class="greet">
-          <span class="kick">Thursday · Aug 14 · Week 3</span>
+          <span class="kick" id="greetkick">Thursday · Aug 14 · Week 3</span>
           <h2>Let’s get to<br>work, <em>Matt.</em></h2>
         </div>
 
@@ -636,10 +635,10 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 
         <div class="h-sec">My progress</div>
         <div class="tiles">
-          <div class="tile" onclick="go('s-progress')"><div class="lbl">Body weight</div><div class="big num">184.2 <small>lb</small></div><div class="delta d-up">▾ 7.8 lb since Week 0</div></div>
-          <div class="tile" onclick="go('s-progress')"><div class="lbl">Streak</div><div class="big num" id="streaktile">12 <small>days</small></div><div class="delta d-red">🔥 Personal best</div></div>
-          <div class="tile" onclick="go('s-progress')"><div class="lbl">Personal bests</div><div class="big num">9</div><div class="delta d-gold">★ 2 this month</div></div>
-          <div class="tile" onclick="go('s-progress')"><div class="lbl">Steps today</div><div class="big num">7,412</div><div class="delta d-up">Apple Watch · synced</div></div>
+          <div class="tile" onclick="go('s-progress');pseg('stats')"><div class="lbl">Body weight</div><div class="big num">184.2 <small>lb</small></div><div class="delta d-up">▾ 7.8 lb since Week 0</div></div>
+          <div class="tile" onclick="go('s-progress');pseg('prs')"><div class="lbl">Streak</div><div class="big num" id="streaktile">12 <small>days</small></div><div class="delta d-red">🔥 Personal best</div></div>
+          <div class="tile" onclick="go('s-progress');pseg('prs')"><div class="lbl">Personal bests</div><div class="big num" id="prtile">9</div><div class="delta d-gold" id="prtilesub">★ 2 this month</div></div>
+          <div class="tile" onclick="go('s-progress');pseg('stats')"><div class="lbl">Steps today</div><div class="big num">7,412</div><div class="delta d-up">Apple Watch · synced</div></div>
         </div>
       </div>
     </section>
@@ -651,7 +650,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         <div class="chatbub" onclick="go('s-chat',true)"><div class="avatar av-red">DB</div></div>
       </div>
       <div class="scroll">
-        <div class="weekstrip">
+        <div class="weekstrip" id="weekstrip">
           <div class="wday donew"><div class="d">MON</div><div class="n">11</div><div class="m"></div></div>
           <div class="wday donew"><div class="d">TUE</div><div class="n">12</div><div class="m"></div></div>
           <div class="wday"><div class="d">WED</div><div class="n">13</div><div class="m"></div></div>
@@ -671,9 +670,9 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         <div class="progrow" style="opacity:.6"><div class="ic">🧘</div><div class="t"><b>Recovery + Sauna</b><span>Sun · Earned, not given</span></div></div>
 
         <div class="h-sec">Completed</div>
-        <div class="progrow"><div class="ic">💪</div><div class="t"><b>Upper Push + Core</b><span>Tue · 52 min · note sent to Darren</span></div><span class="star">⭐</span></div>
-        <div class="progrow"><div class="ic">🏃</div><div class="t"><b>MetCon 21</b><span>Mon · 31 min · 342 cal</span></div><span class="star">⭐</span></div>
-        <div class="progrow"><div class="ic">🏋️</div><div class="t"><b>Lower Body Strength</b><span>Last Thu · Trap bar 305×5 — easy</span></div><span class="star">⭐</span></div>
+        <div class="progrow"><div class="ic">💪</div><div class="t"><b>Upper Push + Core</b><span>Yesterday · 52 min · note sent to Darren</span></div><span class="star">⭐</span></div>
+        <div class="progrow"><div class="ic">🏃</div><div class="t"><b>MetCon 21</b><span>2 days ago · 31 min · 342 cal</span></div><span class="star">⭐</span></div>
+        <div class="progrow"><div class="ic">🏋️</div><div class="t"><b>Lower Body Strength</b><span>Last week · Trap bar 305×5 — easy</span></div><span class="star">⭐</span></div>
       </div>
     </section>
 
@@ -714,7 +713,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         </div>
         <div class="card" id="histcard" style="display:none;margin-top:10px">
           <div class="kick" style="margin-bottom:9px">Lift history — trap bar deadlift</div>
-          <div class="sub" style="line-height:2">Last week &nbsp;<b class="num" style="color:#fff">305 × 5</b> · felt easy<br>2 weeks ago &nbsp;<b class="num" style="color:#fff">295 × 5</b><br>Best ever &nbsp;<b class="num" style="color:var(--gold)">310 × 3</b> · Jun 30</div>
+          <div class="sub" style="line-height:2">Last week &nbsp;<b class="num" style="color:#fff">305 × 5</b> · felt easy<br>2 weeks ago &nbsp;<b class="num" style="color:#fff">295 × 5</b><br>Best ever &nbsp;<b class="num" style="color:var(--gold)" id="histbest">310 × 3</b><span id="histbestd"> · Jun 30</span></div>
         </div>
         <div class="sub" style="margin:12px 2px 10px" id="trk-note">Darren: "Brace hard, push the floor away. 315 is there if the first three move well."</div>
         <div id="setlist"></div>
@@ -738,14 +737,14 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
       <div class="prpop" id="prpop">
         <div class="medal">🏅</div>
         <h3>NEW PR</h3>
-        <p><b>Trap Bar Deadlift — 315 lb.</b><br>310 stood for six weeks. Not anymore.<br>Logged to your PR wall — Darren’s been notified.</p>
+        <p><b id="prlift">Trap Bar Deadlift — 315 lb.</b><br>310 stood for six weeks. Not anymore.<br>Logged to your PR wall — Darren’s been notified.</p>
         <button class="btn gold" onclick="closePR()">Lock it in <span class="slash"></span></button>
       </div>
     </section>
 
     <!-- ================= SUMMARY ================= -->
     <section class="screen pushed" id="s-summary">
-      <div class="hdr"><span class="kick">Session complete</span><span class="tag gold">⭐ Day 2</span></div>
+      <div class="hdr"><button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg></button><span class="kick">Session complete</span><span class="tag gold">⭐ Day 2</span></div>
       <div class="scroll summary">
         <div class="h-big">That’s what<br>showing up<br>looks like.</div>
         <div class="statgrid">
@@ -798,13 +797,13 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
           <div class="hqcard">
             <span class="tag red">Boston · Private studio</span>
             <h3 style="font-size:19px;font-weight:900;text-transform:uppercase;margin:10px 0 5px">Boston Strong<br>Saturdays</h3>
-            <div class="sub" style="margin-bottom:14px">Sat Aug 16 · 10:00 AM · Bootcamp + afterparty · 200+ going</div>
+            <div class="sub" style="margin-bottom:14px"><span id="hqdate">Sat Aug 16</span> · 10:00 AM · Bootcamp + afterparty · 200+ going</div>
             <button class="btn small" id="rsvpbtn" onclick="rsvp()">Show up ▸</button>
           </div>
           <div class="h-sec">Book a session</div>
-          <div class="livesch"><div class="when"><b>FRI</b><span>Aug 15</span></div><div class="t"><b>1:1 with Darren</b><span>HQ · 7:00 AM · 2 slots left</span></div><button class="btn ghost small" onclick="toast('Booked — synced to your calendar')">Book</button></div>
-          <div class="livesch"><div class="when"><b>SAT</b><span>Aug 16</span></div><div class="t"><b>Small Group Strength</b><span>HQ · 8:00 AM · with Jamie</span></div><button class="btn ghost small" onclick="toast('Booked — synced to your calendar')">Book</button></div>
-          <div class="livesch"><div class="when"><b>SUN</b><span>Aug 17</span></div><div class="t"><b>Ritual — Wellness Social</b><span>Pilates + networking · 400 going</span></div><button class="btn ghost small" onclick="toast('You’re on the list — see you there')">Show up ▸</button></div>
+          <div class="livesch"><div class="when"><b>FRI</b><span id="bk-fri">Aug 15</span></div><div class="t"><b>1:1 with Darren</b><span>HQ · 7:00 AM · 2 slots left</span></div><button class="btn ghost small" onclick="toast('Booked — synced to your calendar')">Book</button></div>
+          <div class="livesch"><div class="when"><b>SAT</b><span id="bk-sat">Aug 16</span></div><div class="t"><b>Small Group Strength</b><span>HQ · 8:00 AM · with Jamie</span></div><button class="btn ghost small" onclick="toast('Booked — synced to your calendar')">Book</button></div>
+          <div class="livesch"><div class="when"><b>SUN</b><span id="bk-sun">Aug 17</span></div><div class="t"><b>Ritual — Wellness Social</b><span>Pilates + networking · 400 going</span></div><button class="btn ghost small" onclick="toast('You’re on the list — see you there')">Show up ▸</button></div>
         </div>
       </div>
     </section>
@@ -875,7 +874,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         <div class="lb">
           <div class="lbrow"><span class="rank">1</span><div class="avatar av-dk">KM</div><span class="t">Kate M.</span><span class="v num">21 🔥</span></div>
           <div class="lbrow"><span class="rank">2</span><div class="avatar av-dk">CD</div><span class="t">Chris D.</span><span class="v num">17 🔥</span></div>
-          <div class="lbrow me"><span class="rank">3</span><div class="avatar av-dk">MB</div><span class="t">Matt B. — you</span><span class="v num">12 🔥</span></div>
+          <div class="lbrow me"><span class="rank">3</span><div class="avatar av-dk">MB</div><span class="t">Matt B. — you</span><span class="v num" id="lbme">12 🔥</span></div>
           <div class="lbrow"><span class="rank">4</span><div class="avatar av-dk">JT</div><span class="t">Jess T.</span><span class="v num">11 🔥</span></div>
         </div>
         <div style="height:14px"></div>
@@ -909,7 +908,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         </div>
 
         <div id="pseg-stats" style="display:none">
-          <div class="h-sec">Body weight — 8 weeks</div>
+          <div class="h-sec">Body weight — since Week 0</div>
           <div class="card chartcard">
             <svg viewBox="0 0 320 130">
               <polyline points="10,18 54,30 98,42 142,38 186,58 230,72 274,84 310,96" fill="none" stroke="#2a2a2a" stroke-width="22" stroke-linecap="round" opacity=".35"/>
@@ -981,7 +980,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
     <section class="screen pushed" id="s-challenge">
       <div class="hdr">
         <button class="backbtn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 19l-7-7 7-7"/></svg> Back</button>
-        <span class="tag red">Open to all members</span>
+        <span class="tag red">Open to everyone</span>
       </div>
       <div class="scroll">
         <div class="challenge" style="margin-top:6px">
@@ -1052,7 +1051,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         <div class="bigrings">
           <div class="ring" id="fuelring"></div>
           <div class="mrow">
-            <div class="mline"><span class="lbl">Protein</span><div class="bar"><i id="bar-pro" style="width:78%"></i></div><span class="v num" id="v-pro">156 / 200g</span></div>
+            <div class="mline"><span class="lbl">Protein</span><div class="bar"><i id="bar-pro" style="width:64%"></i></div><span class="v num" id="v-pro">128 / 200g</span></div>
             <div class="mline"><span class="lbl">Carbs</span><div class="bar"><i id="bar-carb" style="width:62%;background:#fff"></i></div><span class="v num" id="v-carb">168 / 270g</span></div>
             <div class="mline"><span class="lbl">Fat</span><div class="bar"><i id="bar-fat" style="width:55%;background:#9a9a9a"></i></div><span class="v num" id="v-fat">44 / 80g</span></div>
           </div>
@@ -1109,6 +1108,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
         </div>
         <div class="sub" style="margin-bottom:18px">One-time. Keeps the replays and crew feed forever. 90% goes straight to your coach.</div>
         <button class="btn paybtn" onclick="payConfirm()"> Pay &nbsp;·&nbsp; <span class="num" id="pay-amt2">$19</span></button>
+        <button class="btn ghost" style="margin-top:10px" onclick="payClose()">Cancel</button>
         <div class="sub" style="text-align:center;margin-top:12px;font-size:10.5px">Coaches set their own price. Free for VIP 1:1 clients.</div>
       </div>
     </div>
@@ -1156,7 +1156,7 @@ function show(id, dir='tab'){
 }
 function go(id,push){
   const cur = document.querySelector('.screen.on');
-  if(push && cur) stack.push(cur.id);
+  if(push && cur){ stack.push(cur.id); try{history.pushState({batt:stack.length},'');}catch(e){} }
   if(!push) stack = [];
   let dir = 'tab';
   if(push) dir = 'push';
@@ -1164,7 +1164,15 @@ function go(id,push){
   show(id, dir);
   if(id==='s-chat') document.getElementById('chatdot').style.display='none';
 }
-function back(){ show(stack.pop() || 's-today', 'pop'); }
+let backLock=0;
+function back(){
+  const n=performance.now();
+  if(n-backLock<340) return;
+  backLock=n;
+  show(stack.pop() || 's-today', 'pop');
+}
+/* browser back / iOS edge-swipe pops the in-app stack instead of leaving the page */
+window.addEventListener('popstate',()=>{ if(stack.length) back(); });
 function enterApp(){ show('s-today', 'enter'); }
 function launchApp(cell){
   const s=document.getElementById('s-splash');
@@ -1172,6 +1180,10 @@ function launchApp(cell){
   s.style.transformOrigin=((r.left+r.width/2-ph.left)/ph.width*100)+'% '+((r.top+r.height/2-ph.top)/ph.height*100)+'%';
   show('s-splash', 'enter');
   s.style.animation='appOpen .5s cubic-bezier(.32,.72,0,1)';
+  s.addEventListener('animationend', function h(e){
+    if(e.target!==s) return;
+    s.style.animation=''; s.removeEventListener('animationend', h);
+  });
 }
 
 /* ============ toast ============ */
@@ -1186,19 +1198,40 @@ function toast(msg,gold){
   toastT = setTimeout(()=>{ t.classList.add('hidex'); t.classList.remove('showx'); }, 2200);
 }
 
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============ live dates ============ */
+const NOW=new Date();
+const DOWS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const DOWFULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MOS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtD=d=>MOS[d.getMonth()]+' '+d.getDate();
+function addDays(n){ const d=new Date(NOW); d.setDate(d.getDate()+n); return d; }
+function nextDow(dow){ return addDays(((dow-NOW.getDay()+7)%7)||7); }
+document.getElementById('greetkick').textContent=`${DOWFULL[NOW.getDay()]} · ${fmtD(NOW)} · Week 3`;
+document.getElementById('weekstrip').innerHTML=[-3,-2,-1,0,1,2,3].map(off=>{
+  const d=addDays(off);
+  const cls=['wday',(off===-2||off===-1)&&'donew',off===0&&'todayx hasw',off===2&&'hasw'].filter(Boolean).join(' ');
+  return `<div class="${cls}"${off===0?' id="wd-today"':''}><div class="d">${DOWS[d.getDay()]}</div><div class="n">${d.getDate()}</div><div class="m"></div></div>`;
+}).join('');
+document.getElementById('hqdate').textContent='Sat '+fmtD(nextDow(6));
+document.getElementById('bk-fri').textContent=fmtD(nextDow(5));
+document.getElementById('bk-sat').textContent=fmtD(nextDow(6));
+document.getElementById('bk-sun').textContent=fmtD(nextDow(0));
+
 /* ============ rings ============ */
 function ringSVG(pct,size,stroke,color){
   const r=(size-stroke)/2, c=2*Math.PI*r;
   return `<svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#262626" stroke-width="${stroke}"/><circle class="ringfg" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c}" style="--ring-c:${c};--ring-to:${c*(1-pct)}"/></svg>`;
 }
-const ringdefs={cal:[.71,'1,710'],pro:[.78,'156g'],carb:[.62,'168g'],fat:[.55,'44g']};
+const ringdefs={cal:[.66,'1,710'],pro:[.64,'128g'],carb:[.62,'168g'],fat:[.55,'44g']};
 document.querySelectorAll('[data-ring]').forEach(el=>{
   const [pct,val]=ringdefs[el.dataset.ring];
   el.innerHTML = ringSVG(pct,52,4.5,'var(--red)') + `<div class="val num">${val}</div>`;
 });
 function fuelRing(){
   document.getElementById('fuelring').innerHTML =
-    ringSVG(fuel.cal/2400,96,7,'var(--red)') + `<div class="val num">${fuel.cal.toLocaleString()}<small>OF 2,400 CAL</small></div>`;
+    ringSVG(fuel.cal/2600,96,7,'var(--red)') + `<div class="val num">${fuel.cal.toLocaleString()}<small>OF 2,600 CAL</small></div>`;
 }
 
 /* ============ habits ============ */
@@ -1270,6 +1303,8 @@ function fmt(which){
 let exIdx=0, setState=[], startTime=null, elapsedT=null, prHit=false, totalVol=0;
 function startWorkout(){
   exIdx=0; prHit=false; totalVol=0;
+  document.getElementById('elapsed').textContent='00:00';
+  document.getElementById('histcard').style.display='none';
   setState = flat.map(e=>Array.from({length:e.sets},(_,i)=>({w:e.base,r:parseInt(e.reps)||10,done:false})));
   go('s-tracker',true);
   startTime = Date.now();
@@ -1287,7 +1322,6 @@ function renderEx(anim){
   document.getElementById('trk-kick').textContent=`Exercise ${exIdx+1} · ${e.sets} sets × ${e.reps}`;
   document.getElementById('trk-note').textContent=`Darren: “${e.note}”`;
   document.getElementById('excount').textContent=`${exIdx+1} / ${flat.length}`;
-  document.getElementById('histcard').style.display='none';
   const sets=setState[exIdx];
   const nextIdx = sets.findIndex(s=>!s.done);
   const list=document.getElementById('setlist');
@@ -1307,15 +1341,20 @@ function renderEx(anim){
 }
 function bump(i,k,d){
   const s=setState[exIdx][i];
+  if(s.done) return;
   s[k]=Math.max(0,s[k]+d);
   renderEx(false);
 }
 function doneSet(i){
   const s=setState[exIdx][i];
-  if(s.done){s.done=false; totalVol=Math.max(0,totalVol-s.w*s.r); renderEx(false); return;}
+  if(s.done){
+    s.done=false; totalVol=Math.max(0,totalVol-s.w*s.r);
+    if(flat[exIdx].n==='Trap Bar Deadlift' && s.w>=315 && !prLogged) prHit=false;
+    renderEx(false); return;
+  }
   s.done=true; totalVol += s.w*s.r;
   const e=flat[exIdx];
-  if(e.n==='Trap Bar Deadlift' && s.w>=315 && !prHit){ prHit=true; renderEx(false); showPR(); return; }
+  if(e.n==='Trap Bar Deadlift' && s.w>=315 && !prHit){ prHit=true; renderEx(false); showPR(s.w,s.r); return; }
   renderEx(false);
   const nxt = setState[exIdx].findIndex(x=>!x.done);
   if(nxt>=0) startRest(e.rest, `Next: Set ${nxt+1} — same weight, own the bar speed`);
@@ -1342,15 +1381,27 @@ function tickRest(){
 }
 function addRest(){ restLeft+=15; restTotal=Math.max(restTotal,restLeft); tickRest(); }
 function endRest(){ clearInterval(restT); document.getElementById('rest').classList.remove('on'); }
-function nextEx(){ if(exIdx<flat.length-1){exIdx++; renderEx();} else openSummary(); }
-function prevEx(){ if(exIdx>0){exIdx--; renderEx();} }
+function nextEx(){ if(exIdx<flat.length-1){exIdx++; document.getElementById('histcard').style.display='none'; renderEx();} else openSummary(); }
+function prevEx(){ if(exIdx>0){exIdx--; document.getElementById('histcard').style.display='none'; renderEx();} }
 function toggleHist(){ const h=document.getElementById('histcard'); h.style.display=h.style.display==='none'?'block':'none'; }
-function showPR(){
+let pendingPR=null, prLogged=false;
+function showPR(w,r){
+  pendingPR={w,r};
+  document.getElementById('prlift').textContent=`Trap Bar Deadlift — ${w} lb.`;
   const p=document.getElementById('prpop');
   p.classList.remove('on'); void p.offsetWidth; p.classList.add('on');
 }
 function closePR(){
   document.getElementById('prpop').classList.remove('on');
+  if(pendingPR && !prLogged){
+    prLogged=true;
+    prs[0]={l:'Trap Bar Deadlift',w:String(pendingPR.w),u:'lb',d:'Today',hot:true};
+    renderPRs();
+    document.getElementById('histbest').textContent=`${pendingPR.w} × ${pendingPR.r}`;
+    document.getElementById('histbestd').textContent=' · Today';
+    document.getElementById('prtile').textContent='10';
+    document.getElementById('prtilesub').textContent='★ 3 this month';
+  }
   toast('PR logged — Darren notified 🏅', true);
   startRest(flat[exIdx].rest,'Breathe. That one earned the rest.');
 }
@@ -1366,6 +1417,7 @@ function openSummary(){
     String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
   countUp(document.getElementById('sum-vol'), totalVol);
   document.getElementById('sum-pr').textContent = prHit?'1':'0';
+  document.getElementById('coachnote').value='';
   stack=[]; show('s-summary', 'push');
 }
 function finishWorkout(){
@@ -1375,6 +1427,7 @@ function finishWorkout(){
   if(cbtn) cbtn.outerHTML='<div class="tag gold" style="padding:8px 12px">⭐ COMPLETE — SENT TO DARREN</div>';
   document.getElementById('wd-today').classList.add('donew');
   document.getElementById('streaktile').innerHTML='13 <small>days</small>';
+  document.getElementById('lbme').textContent='13 🔥';
   show('s-today');
   toast('Day 2 locked in ⭐ Streak: 13', true);
 }
@@ -1451,7 +1504,7 @@ const liveLines=[
   ['JT','Jess T.','first live class — this is unreal',false],
   ['DB','Darren','Welcome Jess 👊 Last round crew. Nobody quits. Let’s get to work.',true],
 ];
-let liveTimer=null, liveIx=0, viewers=132;
+let liveTimer=null, liveReplyT=null, liveIx=0, viewers=132;
 function liveLoop(){
   if(!document.getElementById('s-live').classList.contains('on')) return;
   if(liveIx<liveLines.length){
@@ -1465,7 +1518,7 @@ function liveLoop(){
 function addLiveMsg(av,who,msg,coach){
   const d=document.createElement('div');
   d.className='cmsg'+(coach?' coach':'');
-  d.innerHTML=`<div class="avatar ${coach?'av-red':'av-dk'}">${av}</div><p><b>${who}</b>${msg}</p>`;
+  d.innerHTML=`<div class="avatar ${coach?'av-red':'av-dk'}">${av}</div><p><b>${who}</b>${esc(msg)}</p>`;
   const feed=document.getElementById('livechat');
   feed.appendChild(d); feed.scrollTop=feed.scrollHeight;
 }
@@ -1473,7 +1526,8 @@ function sendLive(){
   const f=document.getElementById('liveinput');
   if(!f.value.trim())return;
   addLiveMsg('MB','You',f.value,false); f.value='';
-  setTimeout(()=>addLiveMsg('DB','Darren','I see you Matt 👊',true), 1600);
+  clearTimeout(liveReplyT);
+  liveReplyT=setTimeout(()=>addLiveMsg('DB','Darren','I see you Matt 👊',true), 1600);
 }
 function heart(ev){
   const h=document.createElement('div');
@@ -1517,7 +1571,7 @@ renderFeed();
 
 /* ============ open challenges (Solin-style, any coach, open enrollment) ============ */
 const chals=[
-  {t:'30-Day MetCon Madness',coach:'Jamie Hines',av:'JH',when:'Starts Mon Aug 18',len:'30 days',crew:58,price:'FREE',prize:'Winner takes a free VIP month',desc:'One 20-minute burner a day. No equipment for weeks 1–2. Miss a day and you owe the crew 50 burpees — Jamie counts.',joined:false},
+  {t:'30-Day MetCon Madness',coach:'Jamie Hines',av:'JH',when:'Starts Mon '+fmtD(nextDow(1)),len:'30 days',crew:58,price:'FREE',prize:'Winner takes a free VIP month',desc:'One 20-minute burner a day. No equipment for weeks 1–2. Miss a day and you owe the crew 50 burpees — Jamie counts.',joined:false},
   {t:'Kickstart: Zero to Bootcamp',coach:'Ally Lindsey',av:'AL',when:'Rolling start — begin any Monday',len:'14 days',crew:112,price:'FREE',prize:'Finishers unlock a free 1:1 intro session',desc:'Brand new? Two weeks of low-impact foundations that end with your first full bootcamp class. Built for total beginners — no membership needed.',joined:false},
   {t:'Protein 30/30',coach:'Sam Batchelder',av:'SB',when:'Starts Sep 1',len:'30 days',crew:41,price:'$19',prize:'Top logger wins a stocked grocery haul',desc:'30g of protein, 3 times a day, 30 days straight. Photo-log every meal — Sam audits the feed weekly.',joined:false},
   {t:'Grip &amp; Rip: Deadlift Club',coach:'Garrett Magill',av:'GM',when:'Starts Aug 25',len:'6 weeks',crew:27,price:'$29',prize:'Biggest PR takes the belt',desc:'Six weeks, one goal: a deadlift PR. Two lifting days a week that layer on top of whatever program you already run.',joined:false},
@@ -1548,14 +1602,16 @@ function joinChal(i){
   }
   doJoin(i);
 }
+let todayChalRef=null;
+function openTodayChal(){ const i=chals.indexOf(todayChalRef); if(i>=0) openChal(i); }
 function doJoin(i){
   const c=chals[i];
-  c.joined=true; c.crew++;
+  c.joined=true; c.crew++; todayChalRef=c;
   renderChals();
   if(document.getElementById('s-challenge').classList.contains('on')) fillChal(i);
   const tc=document.getElementById('todaychal');
   tc.style.display='block';
-  tc.innerHTML=`<div class="habit" style="border-color:rgba(255,65,54,.35)" onclick="openChal(${i})">
+  tc.innerHTML=`<div class="habit" style="border-color:rgba(255,65,54,.35)" onclick="openTodayChal()">
     <div class="avatar av-red" style="width:26px;height:26px;font-size:9px;flex-shrink:0">${c.av}</div>
     <div class="t"><b style="text-decoration:none">${c.t}</b><span class="sub" style="font-size:10.5px">Day 1 drops here — ${c.coach.split(' ')[0]}’s challenge</span></div>
     <span class="tag red">JOINED</span></div>`;
@@ -1563,15 +1619,16 @@ function doJoin(i){
 }
 function payClose(){ document.getElementById('paysheet').classList.remove('on'); }
 function payConfirm(){
+  const i=payIdx; payIdx=null;
   payClose();
-  if(payIdx!==null){ doJoin(payIdx); payIdx=null; }
+  if(i!==null) doJoin(i);
 }
 function publishChal(){
-  const name=document.getElementById('cs-name').value||'Untitled challenge';
+  const name=esc(document.getElementById('cs-name').value)||'Untitled challenge';
   chals.unshift({t:name,coach:'Sam Batchelder',av:'SB',
-    when:'Starts Monday',len:document.getElementById('cs-len').value||'30 days',crew:1,
-    price:(document.getElementById('cs-price').value||'FREE').toUpperCase(),
-    prize:document.getElementById('cs-prize').value||'Bragging rights',
+    when:'Starts Mon '+fmtD(nextDow(1)),len:esc(document.getElementById('cs-len').value)||'30 days',crew:1,
+    price:esc(document.getElementById('cs-price').value||'FREE').toUpperCase(),
+    prize:esc(document.getElementById('cs-prize').value)||'Bragging rights',
     desc:'Daily drop: '+(document.getElementById('cs-drop').value||'show up'),joined:false});
   renderChals();
   back();
@@ -1614,12 +1671,15 @@ const prs=[
   {l:'500m Row',w:'1:32',u:'',d:'Aug 2'},
   {l:'Sled Push 20m',w:'270',u:'lb',d:'Jul 29'},
 ];
-document.getElementById('prwall').innerHTML=prs.map(p=>`
+function renderPRs(){
+  document.getElementById('prwall').innerHTML=prs.map(p=>`
   <div class="prcard" ${p.hot?'style="border-color:rgba(255,233,50,.4)"':''}>
     <div style="display:flex;justify-content:space-between"><div class="lift">${p.l}</div>${p.hot?'<span>🏅</span>':''}</div>
     <div class="wt num">${p.w} <small>${p.u}</small></div>
     <div class="date">${p.d}</div>
   </div>`).join('');
+}
+renderPRs();
 const cal=document.getElementById('starcal');
 const starDays=[1,2,4,5,7,8,9,11,12,14,15,16,18,19,21,22,25,26];
 cal.innerHTML=Array.from({length:28},(_,i)=>`<div class="scday ${starDays.includes(i)?'st':''}">${starDays.includes(i)?'⭐':''}</div>`).join('');
@@ -1633,7 +1693,7 @@ function sendChat(){
 }
 function pushChat(msg){
   const sc=document.getElementById('chatscroll');
-  sc.insertAdjacentHTML('beforeend',`<div class="bub me">${msg}</div>`);
+  sc.insertAdjacentHTML('beforeend',`<div class="bub me">${esc(msg)}</div>`);
   document.getElementById('chatdot').style.display='none';
   sc.scrollTop=sc.scrollHeight;
   setTimeout(()=>{
@@ -1672,13 +1732,13 @@ function sendVideo(){
 }
 
 /* ============ fuel ============ */
-let fuel={cal:1710,pro:156,carb:168,fat:44};
+let fuel={cal:1710,pro:128,carb:168,fat:44};
 fuelRing();
 let mealSnapped=false;
 function snapMeal(){
   if(mealSnapped){ toast('Tonight’s meal is already logged'); return; }
   mealSnapped=true;
-  fuel.cal+=640; fuel.pro+=44; fuel.carb+=52; fuel.fat+=18;
+  fuel.cal+=640; fuel.pro+=44; fuel.carb+=58; fuel.fat+=26;
   fuelRing();
   document.getElementById('bar-pro').style.width=Math.min(100,fuel.pro/200*100)+'%';
   document.getElementById('bar-carb').style.width=Math.min(100,fuel.carb/270*100)+'%';
@@ -1695,11 +1755,12 @@ function snapMeal(){
 const liveObs=new MutationObserver(()=>{
   const on=document.getElementById('s-live').classList.contains('on');
   if(on && !liveTimer){
-    liveIx=0;
+    liveIx=0; viewers=132;
+    document.getElementById('viewct').textContent=viewers;
     document.getElementById('livechat').innerHTML='<div class="cmsg pinned coach"><div class="avatar av-red">DB</div><p><b>Darren</b>40 seconds on, 20 off. Nobody quits in the last round. Let’s get to work.</p></div>';
     liveLoop();
   }
-  if(!on && liveTimer){ clearTimeout(liveTimer); liveTimer=null; }
+  if(!on){ clearTimeout(liveTimer); liveTimer=null; clearTimeout(liveReplyT); }
 });
 liveObs.observe(document.getElementById('s-live'),{attributes:true,attributeFilter:['class']});
 </script>
