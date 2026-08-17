@@ -2,7 +2,7 @@
    Serves instantly from cache (gym wifi proof), refreshes the cache in the
    background so the next launch picks up new deploys. Bump CACHE to force
    a clean break if the strategy ever changes. */
-const CACHE = 'batt-v1';
+const CACHE = 'batt-v2';
 const ASSETS = ['./', './index.html', './icon.png', './icon-192.png', './icon-512.png', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {

@@ -23,8 +23,14 @@ edit → build → deploy loop.
 - ✅ Demo reset: `?reset=1` URL param, or triple-tap the date line on Today.
 - ✅ PWA: manifest + service worker (stale-while-revalidate) + icons.
   Add-to-Home-Screen launches standalone and works offline.
+- ✅ Sign-in flows (added same day): Continue with Apple / Google (mimicked
+  account sheets) and phone number → fake SMS banner + auto-filled OTP. Pure
+  demo — simulated on-device, zero network. Persists as `S.auth`; reset shows
+  it again. Real OAuth/SMS is a Stage 3 backend item.
 
 ### Stage 2 — real content (gated on punchlist)
+- Steal list from the current app's listing: `current-app-intel.md` (streaks,
+  body-stat charts, steps/sleep tiles, badges, event calendar, meal plans).
 - Ingest Trainerize export: real clients, program templates, pricing.
 - Wire the actual video library (wherever it lives) into Train/On-Demand.
 - Swap canned brand assets for Darren's real files.

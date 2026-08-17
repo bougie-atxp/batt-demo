@@ -27,6 +27,7 @@ works fully offline. Open `index.html` in any browser.
 | `manifest.webmanifest` | PWA manifest — makes Add-to-Home-Screen launch standalone |
 | `sw.js` | Service worker: stale-while-revalidate cache (bump `CACHE` to force-refresh) |
 | `darren-punchlist.md` | Inputs still needed from the client (Darren Battista) |
+| `current-app-intel.md` | What Darren's current (Trainerize) app has — from its App Store listing |
 | `HANDOFF.md` | Project state, known issues, roadmap to a real app |
 
 `qa/` and `scratch/` are untracked local dirs (QA view snapshots, logo
@@ -50,9 +51,10 @@ shasum index.html   # hashes must match
 
 ## Demo state & reset
 
-Interactions (habits, check-in, joined challenges, workout complete, PR,
-snapped meal) persist in localStorage (`batt-demo-v1`) so the demo survives a
-refresh. Two ways to restore the canned state:
+Interactions (sign-in, habits, check-in, joined/published challenges, workout
+complete, PR, snapped meal) persist in localStorage (`batt-demo-v1`) so the
+demo survives a refresh. Two ways to restore the canned state (also signs you
+out, so the Apple/Google/phone sign-in shows again):
 
 - Open with `?reset=1` (e.g. `https://bougie-atxp.github.io/batt-demo/?reset=1`)
 - Triple-tap the date line ("Monday · Aug 17 · Week 3") on the Today screen
