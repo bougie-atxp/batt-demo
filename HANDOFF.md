@@ -105,6 +105,17 @@ confirmed, 5 refuted. Fixes landed same day.
   entities in textContent surfaces); `.livebar` bottom padding uses the
   bottom safe-area inset; Today macro rings refresh after snapping a meal.
 
+### Third sweep (same day) — adversarial verify of the nav rewrite
+
+Re-reviewed the nav/history commit: 2 findings confirmed (2 refuted), fixed:
+- Reload while on a pushed screen left stale `{batt:n}` history entries behind
+  a re-seeded base — the first back gesture was silently eaten. The load-time
+  seed now rewinds to the true base entry instead of relabeling the current one.
+- The workout summary sat at history depth 0 despite its back chevron, so an
+  OS back-swipe left the page. It now owns a depth-1 entry and pops to Today.
+Nav logic re-simulated in node — 17 scenarios pass (incl. reload-at-depth,
+summary swipe, lock-it-in cleanup).
+
 ### Known limitations (accepted for demo)
 - On-screen keyboard can cover the chat/live inputs on iOS (no
   visualViewport handling).

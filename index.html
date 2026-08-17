@@ -1213,7 +1213,14 @@ window.addEventListener('popstate', e=>{
     try{history.go(stack.length - d);}catch(err){}
   }
 });
-try{ history.replaceState({batt:0},''); }catch(e){}
+/* seed depth 0. After a reload at depth n the current entry still carries
+   {batt:n} with stale entries behind it while our stack is empty — rewind to
+   the real base entry; relabeling this one would strand those entries and
+   eat the first back gesture. */
+try{
+  const d0=(history.state && history.state.batt)||0;
+  if(d0>0) history.go(-d0); else history.replaceState({batt:0},'');
+}catch(e){}
 function enterApp(){ show('s-today', 'enter'); }
 function launchApp(cell){
   const s=document.getElementById('s-splash');
@@ -1483,7 +1490,16 @@ function openSummary(){
   countUp(document.getElementById('sum-vol'), totalVol);
   document.getElementById('sum-pr').textContent = prHit?'1':'0';
   document.getElementById('coachnote').value='';
-  clearNav(); show('s-summary', 'push');
+  /* summary shows a back chevron, so it must own a history entry — rewind the
+     workout/tracker entries to depth 1 (not 0, which lets an OS back gesture
+     leave the page) so back pops to Today like every other pushed screen */
+  stack=['s-today'];
+  const d=(history.state && history.state.batt)||0;
+  try{
+    if(d>1) history.go(1-d);
+    else if(d<1) history.pushState({batt:1},'');
+  }catch(e){}
+  show('s-summary', 'push');
 }
 function applyWorkoutDone(){
   document.getElementById('donestar').style.display='flex';
