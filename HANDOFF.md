@@ -16,13 +16,13 @@ edit → build → deploy loop.
 
 ## Roadmap
 
-### Stage 1 — playable v2 (no backend needed, can start now)
-- Persistence: localStorage for completed workouts, PRs, joined challenges,
-  streaks — so the demo survives refresh and feels alive across days.
-- Every visible control does something; no dead buttons in front of a client.
-- Demo reset (hidden gesture or `?reset=1`) to restore the canned state.
-- PWA: manifest + service worker so Darren can Add-to-Home-Screen and carry
-  it on his phone like a real app. Keep the zero-dependency rule.
+### Stage 1 — playable v2 — DONE 2026-08-17
+- ✅ Persistence: localStorage (`batt-demo-v1`) for habits, check-in, joined
+  challenges, workout complete, PR, snapped meal. Mutations are factored into
+  `apply*()` functions replayed silently by the `restore()` block at script end.
+- ✅ Demo reset: `?reset=1` URL param, or triple-tap the date line on Today.
+- ✅ PWA: manifest + service worker (stale-while-revalidate) + icons.
+  Add-to-Home-Screen launches standalone and works offline.
 
 ### Stage 2 — real content (gated on punchlist)
 - Ingest Trainerize export: real clients, program templates, pricing.
@@ -84,6 +84,26 @@ confirmed, 5 refuted. Fixes landed same day.
 - Pay sheet has a Cancel button; live-class viewers/chat reset per visit;
   Today tiles deep-link to the right Progress segment; copy contradictions
   fixed ("Open to everyone", weight-chart title, leaderboard streak syncs).
+
+### Second sweep (same day) — adversarial verify of the fix commit
+
+19-agent workflow re-reviewed commit 3f941e7 itself: 14 findings confirmed,
+1 refuted. All 14 fixed in the follow-up commit:
+- Nav/history was desynced 4 ways (back() never consumed its pushState entry,
+  tab switches/summary orphaned entries, forward-swipe popped backward, the
+  340ms debounce swallowed popstates). Rewritten: history entry depth
+  (`state.batt`) is the source of truth; popstate syncs the stack to it;
+  in-app back calls history.back(); base-screen jumps rewind via history.go().
+  Logic unit-simulated in node across 9 scenarios (see git log for receipts).
+- PR flow: re-logging works (a second, heavier PR updates the wall); trigger
+  compares against the current best (`bestW`, seeded 310) instead of a
+  hardcoded 315, so a sub-best weight no longer announces "NEW PR".
+- Dates: booking rows sort chronologically on Fri/Sat, HQ row says "Today" on
+  Saturdays, weekstrip dot marks actual future weekend days, remaining
+  hard-coded challenge dates (Sep 1 / Aug 25 / Sep 5) made dynamic.
+- Escaping moved from store-time to render-site (no more double-escaped
+  entities in textContent surfaces); `.livebar` bottom padding uses the
+  bottom safe-area inset; Today macro rings refresh after snapping a meal.
 
 ### Known limitations (accepted for demo)
 - On-screen keyboard can cover the chat/live inputs on iOS (no
