@@ -116,6 +116,13 @@ Re-reviewed the nav/history commit: 2 findings confirmed (2 refuted), fixed:
 Nav logic re-simulated in node — 17 scenarios pass (incl. reload-at-depth,
 summary swipe, lock-it-in cleanup).
 
+A separate state-layer review confirmed 1 more: coach-published challenges
+were never persisted, so the publish → join demo beat vanished on reload (and
+its orphaned title in `S.joined` could mark a same-named canned challenge as
+joined). Publishes now persist as raw form inputs (`S.pub`, dates recomputed
+at load) and replay before joins in `restore()`. Verified with a
+seeded-localStorage headless reload.
+
 ### Known limitations (accepted for demo)
 - On-screen keyboard can cover the chat/live inputs on iOS (no
   visualViewport handling).

@@ -1127,7 +1127,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 /* ============ demo persistence ============ */
 /* Reset the canned state with ?reset=1 or by triple-tapping the date line on Today. */
 const STORE='batt-demo-v1';
-let S={habits:null,checked:false,joined:[],workoutDone:false,pr:null,mealSnapped:false};
+let S={habits:null,checked:false,joined:[],pub:[],workoutDone:false,pr:null,mealSnapped:false};
 function save(){ try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){} }
 (function(){ try{
   if(new URLSearchParams(location.search).has('reset')){
@@ -1715,18 +1715,26 @@ function payConfirm(){
   payClose();
   if(i!==null) doJoin(i);
 }
+/* S.pub keeps raw form inputs, not the built object — `when` must be
+   recomputed at load like every other date */
+function applyPublish(p){
+  chals.unshift({t:p.t,coach:'Sam Batchelder',av:'SB',
+    when:'Starts Mon '+fmtD(nextDow(1)),len:p.len,crew:1,
+    price:p.price,prize:p.prize,desc:'Daily drop: '+p.drop,joined:false});
+  renderChals();
+}
 function publishChal(){
   /* store user input RAW — esc() happens at the innerHTML render sites
      (renderChals/renderTodayChal); textContent sites need it unescaped */
-  const name=document.getElementById('cs-name').value.trim()||'Untitled challenge';
-  chals.unshift({t:name,coach:'Sam Batchelder',av:'SB',
-    when:'Starts Mon '+fmtD(nextDow(1)),len:document.getElementById('cs-len').value.trim()||'30 days',crew:1,
+  const p={t:document.getElementById('cs-name').value.trim()||'Untitled challenge',
+    len:document.getElementById('cs-len').value.trim()||'30 days',
     price:(document.getElementById('cs-price').value.trim()||'FREE').toUpperCase(),
     prize:document.getElementById('cs-prize').value.trim()||'Bragging rights',
-    desc:'Daily drop: '+(document.getElementById('cs-drop').value||'show up'),joined:false});
-  renderChals();
+    drop:document.getElementById('cs-drop').value||'show up'};
+  applyPublish(p);
+  S.pub.push(p); save();
   back();
-  toast('Live — "'+name+'" is now in Crew');
+  toast('Live — "'+p.t+'" is now in Crew');
 }
 function openChal(i){ chOpen=i; fillChal(i); go('s-challenge',true); }
 function fillChal(i){
@@ -1867,6 +1875,10 @@ liveObs.observe(document.getElementById('s-live'),{attributes:true,attributeFilt
 (function restore(){
   if(S.habits){ habits.forEach((h,i)=>{ if(S.habits[i]){ h.done=S.habits[i].done; h.s=S.habits[i].s; } }); renderHabits(); }
   if(S.checked) applyCheckin();
+  /* replay publishes BEFORE joins: forEach+unshift reproduces newest-first
+     order, and published copies sit ahead of any same-titled canned challenge
+     so findIndex resolves joins to the right one */
+  (S.pub||[]).forEach(applyPublish);
   S.joined.forEach(t=>{ const i=chals.findIndex(c=>c.t===t); if(i>=0 && !chals[i].joined){ chals[i].joined=true; chals[i].crew++; todayChalRef=chals[i]; } });
   if(todayChalRef){ renderChals(); renderTodayChal(todayChalRef); }
   if(S.pr) applyPR(S.pr.w, S.pr.r, S.pr.d||'Recent');
