@@ -129,7 +129,28 @@ joined). Publishes now persist as raw form inputs (`S.pub`, dates recomputed
 at load) and replay before joins in `restore()`. Verified with a
 seeded-localStorage headless reload.
 
+### Fourth sweep (same day) — stress test (input abuse, races, monkey testing)
+
+12-agent workflow, 5 dimensions (input abuse, storage corruption, race/spam,
+date edges, monkey stress), refute-by-default verification: 5 confirmed
+(2 refuted), 4 fixed:
+- Long unbroken text (mashed keys, pasted URLs) blew out layout on every
+  surface that renders user input — published-challenge names persisted the
+  breakage across reloads via `S.pub`. Fixed with `overflow-wrap:anywhere` on
+  `.habit .t`, `.livesch .t b`, `.bub`, `.cmsg p`, and the toast.
+- Publishing a second challenge with the same (prefilled) name created a
+  permanent duplicate whose joined state silently dropped on reload — titles
+  are the join/restore key. Duplicate titles are now refused with a toast.
+- The pay sheet survived browser-back/edge-swipe and floated over the wrong
+  screen with `payIdx` still armed. popstate now closes it; `payClose()`
+  disarms `payIdx`.
+- (5th confirmed finding accepted, see limitations: clearNav double-rewind.)
+
 ### Known limitations (accepted for demo)
+- Two programmatic tab switches in the same tick can double-rewind history
+  (`history.go()` is async, `history.state` stays stale ~1-5ms) and exit the
+  app in a browser tab. Verified unreachable by human taps — popstate commits
+  in ~0.4ms and a 900-action chaos run never triggered it. Not fixed.
 - On-screen keyboard can cover the chat/live inputs on iOS (no
   visualViewport handling).
 - Landscape phones / tablets >860px wide get the desktop frame view.

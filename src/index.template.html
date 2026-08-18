@@ -196,7 +196,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 .habit.donex .box{background:var(--red);border-color:var(--red);animation:checkpop .4s cubic-bezier(.34,1.5,.64,1)}
 .habit .box svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:opacity .15s,transform .32s cubic-bezier(.34,1.56,.64,1)}
 .habit.donex .box svg{opacity:1;transform:none}
-.habit .t{flex:1}
+.habit .t{flex:1;min-width:0;overflow-wrap:anywhere}
 .habit .t b{font-size:13px;font-weight:700;display:block}
 .habit.donex .t b{text-decoration:line-through;color:#8b8b8b}
 .habit .streak{display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:800;color:var(--red)}
@@ -310,7 +310,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 .livesch .when b{display:block;font-size:16px;font-weight:800}
 .livesch .when span{font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--sub);text-transform:uppercase}
 .livesch .t{flex:1;min-width:0}
-.livesch .t b{display:block;font-size:13.5px;font-weight:800;text-transform:uppercase;line-height:1.2}
+.livesch .t b{display:block;font-size:13.5px;font-weight:800;text-transform:uppercase;line-height:1.2;overflow-wrap:anywhere}
 .livesch .t span{font-size:11px;color:var(--sub);font-weight:600}
 .odgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .odcard{background:var(--card);border:1px solid #232323;border-radius:16px;overflow:hidden;cursor:pointer}
@@ -340,7 +340,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 .cmsg{display:flex;gap:9px;align-items:flex-start;animation:cin .38s cubic-bezier(.16,1,.3,1) both}
 @keyframes cin{from{opacity:0;transform:translate3d(0,12px,0) scale(.97)}to{opacity:1;transform:none}}
 .cmsg .avatar{width:26px;height:26px;font-size:9px;flex-shrink:0}
-.cmsg p{font-size:12.5px;line-height:1.45;color:#ddd}
+.cmsg p{font-size:12.5px;line-height:1.45;color:#ddd;min-width:0;overflow-wrap:anywhere}
 .cmsg p b{font-weight:800;color:#fff;margin-right:5px}
 .cmsg.coach p b{color:var(--red)}
 .cmsg.pinned{background:rgba(255,65,54,.09);border:1px solid rgba(255,65,54,.3);border-radius:13px;padding:9px 11px}
@@ -407,7 +407,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 /* ---------- chat ---------- */
 #s-chat{background:#000}
 .chatscroll{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:11px}
-.bub{max-width:78%;border-radius:17px;padding:11px 14px;font-size:13px;line-height:1.5;animation:cin .4s cubic-bezier(.16,1,.3,1) both}
+.bub{max-width:78%;border-radius:17px;padding:11px 14px;font-size:13px;line-height:1.5;overflow-wrap:anywhere;animation:cin .4s cubic-bezier(.16,1,.3,1) both}
 .bub.them{background:#1c1c1c;align-self:flex-start;border-bottom-left-radius:5px}
 .bub.me{background:var(--red);align-self:flex-end;border-bottom-right-radius:5px}
 .bub .who{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:4px}
@@ -477,7 +477,7 @@ body{background:#0a0a0b;font-family:'Montserrat',system-ui,sans-serif;color:var(
 /* ---------- toast ---------- */
 .toast{position:absolute;left:50%;bottom:calc(var(--tabbar-h) + 20px);transform:translateX(-50%) translateY(24px) scale(.9);
   background:#fff;color:#000;font-size:12px;font-weight:800;border-radius:16px;padding:11px 18px;opacity:0;line-height:1.5;
-  z-index:600;pointer-events:none;white-space:normal;max-width:calc(100% - 36px);text-align:center;text-transform:uppercase;letter-spacing:.05em}
+  z-index:600;pointer-events:none;white-space:normal;overflow-wrap:anywhere;max-width:calc(100% - 36px);text-align:center;text-transform:uppercase;letter-spacing:.05em}
 .toast.showx{animation:toast-in .64s cubic-bezier(.22,1.25,.36,1) both}
 .toast.hidex{animation:toast-out .28s cubic-bezier(.4,0,1,1) both}
 .toast.goldt{background:var(--gold)}
@@ -1308,6 +1308,9 @@ function back(){
    page. Sync to the entry's depth: multiple fast pops each land, forward
    traversal bounces back instead of popping, stack never desyncs from history. */
 window.addEventListener('popstate', e=>{
+  /* the pay sheet blocks in-app taps but not browser-back/edge-swipe — close
+     it (and disarm payIdx) so it can't float over whatever screen we land on */
+  payClose();
   const d=(e.state && e.state.batt)||0;
   if(d < stack.length){
     let id; while(stack.length > d) id=stack.pop();
@@ -1858,7 +1861,7 @@ function doJoin(i){
   if(!S.joined.includes(c.t)){ S.joined.push(c.t); save(); }
   toast("You’re in — no 1:1 needed. "+c.coach.split(' ')[0]+' will see you Day 1');
 }
-function payClose(){ document.getElementById('paysheet').classList.remove('on'); }
+function payClose(){ payIdx=null; document.getElementById('paysheet').classList.remove('on'); }
 function payConfirm(){
   const i=payIdx; payIdx=null;
   payClose();
@@ -1880,6 +1883,10 @@ function publishChal(){
     price:(document.getElementById('cs-price').value.trim()||'FREE').toUpperCase(),
     prize:document.getElementById('cs-prize').value.trim()||'Bragging rights',
     drop:document.getElementById('cs-drop').value||'show up'};
+  /* titles are the join/restore key — a same-named twin would shadow the
+     original and drop its joined state on reload, so refuse the duplicate
+     and stay on the form for a rename */
+  if(chals.some(c=>c.t===p.t)){ toast('"'+p.t+'" is already live — give this one its own name'); return; }
   applyPublish(p);
   S.pub.push(p); save();
   back();
